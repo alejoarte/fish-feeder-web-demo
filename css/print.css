@@ -1,0 +1,147 @@
+@page {
+  margin: 16mm;
+}
+
+body {
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 11pt;
+}
+
+.site-shell {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.site-header,
+.site-footer,
+.no-print,
+.menu-toggle,
+.lang-switch,
+.selector-panel {
+  display: none !important;
+}
+
+.hero-panel,
+.section-block,
+.info-card,
+.detail-panel,
+.print-panel,
+.priority-item,
+.meta-card,
+.constant-row > div {
+  border: 1px solid #cccccc !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  color: #111111 !important;
+  break-inside: avoid;
+}
+
+.hero-panel,
+.section-block,
+.detail-panel,
+.priority-item,
+.info-card,
+.meta-card,
+.constant-row > div {
+  border-radius: 0 !important;
+}
+
+.hero-panel,
+.section-block {
+  padding: 14pt !important;
+  margin: 0 0 12pt !important;
+}
+
+.hero-panel {
+  display: block !important;
+  min-height: auto !important;
+}
+
+.hero-copy h1,
+.section-heading h2,
+.detail-panel h3,
+.info-card h3,
+.priority-item strong,
+.meta-card strong {
+  color: #111111 !important;
+}
+
+.hero-text,
+.detail-panel p,
+.detail-panel strong,
+.priority-item p,
+.info-card p,
+.screen-card p,
+.screen-card small,
+.eyebrow,
+.card-tag,
+.meta-card,
+.constant-row > div {
+  color: #222222 !important;
+}
+
+.specs-layout,
+.detail-meta,
+.detail-list,
+.constant-row,
+.priority-item,
+.card-grid,
+.card-grid-four {
+  display: block !important;
+}
+
+.specs-layout {
+  grid-template-columns: 1fr !important;
+}
+
+.priority-stack,
+.constant-table,
+.detail-list,
+.detail-meta {
+  gap: 8px !important;
+}
+
+.section-heading {
+  margin-bottom: 10pt !important;
+}
+
+.detail-meta > *,
+.detail-list > *,
+.constant-table > *,
+.priority-stack > *,
+#led-cards > * {
+  margin-bottom: 8pt !important;
+}
+
+.color-chip {
+  display: inline-block !important;
+  vertical-align: middle;
+  box-shadow: none !important;
+  border: 1px solid #999999;
+}
+
+.priority-rank {
+  background: #ffffff !important;
+  color: #111111 !important;
+  border: 1px solid #cccccc !important;
+}
+
+a,
+a:visited {
+  color: #111111 !important;
+  text-decoration: none !important;
+}
+
+pre {
+  white-space: pre-wrap !important;
+}
+
+#component-detail,
+#constants-table,
+#led-priority,
+#led-cards {
+  width: 100% !important;
+}
