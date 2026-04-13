@@ -109,7 +109,9 @@
   var nodes = {
     stateTitle: document.getElementById("state-title"),
     stateSummary: document.getElementById("state-summary"),
-    buttonHints: document.getElementById("button-hints"),
+    b1Hint: document.getElementById("b1-hint"),
+    b2Hint: document.getElementById("b2-hint"),
+    b3Hint: document.getElementById("b3-hint"),
     transitionHints: document.getElementById("transition-hints"),
     lcdMain: document.getElementById("lcd-main"),
     lcdAux: document.getElementById("lcd-aux"),
@@ -125,6 +127,51 @@
     distance: document.getElementById("sensor-distance"),
     time: document.getElementById("sensor-time")
   };
+
+  function getInlineButtonHints() {
+    if (store.currentState === "STATE_HOME") {
+      return {
+        b1: "Short: Set Amount | Long: No action",
+        b2: "Short: Monitor | Long: Power menu",
+        b3: "Short: Feed run | Long: Purge hold"
+      };
+    }
+    if (store.currentState === "STATE_SET_PURGE") {
+      return {
+        b1: "Short: Next | Long: Start timed purge",
+        b2: "Short: Previous setting",
+        b3: "Short: Save purge values"
+      };
+    }
+    if (store.currentState === "STATE_POWER_MENU") {
+      return {
+        b1: "Short: Return home",
+        b2: "Short: Return home",
+        b3: "Short: Confirm power option"
+      };
+    }
+    return {
+      b1: "Short: Next setting",
+      b2: "Short: Previous setting",
+      b3: "Short: Save or state action"
+    };
+  }
+
+  function getStateNote(description) {
+    var notesByState = {
+      STATE_HOME: "Ready state. Use buttons to open settings, monitor, or runtime actions.",
+      STATE_SET_AMOUNT: "Editing fish count. Rotate encoder to change value, then save with B3.",
+      STATE_SET_CYCLE: "Editing growth cycle. Encoder changes value; press encoder to switch mode.",
+      STATE_SET_PURGE: "Purge timer setup. Encoder edits minutes/seconds; B1 long starts purge.",
+      STATE_POWER_MENU: "Power decision point. Choose screen-off or sleep and confirm with B3.",
+      STATE_MONITOR_ENTRY: "Monitor preview active. It will transition automatically after countdown.",
+      STATE_SLEEP_ENTRY: "Sleep preview active. Simulator will return after countdown.",
+      STATE_FEED_RUNNING: "Runtime active. B1 short can cancel the current feeding cycle.",
+      STATE_PURGE_RUNNING: "Timed purge active. B1 short cancels and returns to setup.",
+      STATE_FACTORY_RESET_CONFIRM: "High-risk state. Use B1 long only when reset is intentional."
+    };
+    return notesByState[store.currentState] || (description.summary || "Interact with controls to update this state.");
+  }
 
   function maxFishCount(enclosure) {
     return enclosure ? 2000 : 200;
@@ -923,19 +970,17 @@
     var led = evaluateLedRule();
 
     nodes.stateTitle.textContent = description.title;
-    nodes.stateSummary.textContent = description.summary + (description.notes ? " " + description.notes : "");
+    nodes.stateSummary.textContent = getStateNote(description);
     nodes.lcdMain.textContent = description.main.join("\n");
     nodes.lcdAux.textContent = description.aux.join("\n");
     nodes.ledIndicator.setAttribute("data-color", localize(led.label, "en"));
     nodes.ledLabel.textContent = localize(led.label);
     nodes.lcdShell.classList.toggle("is-dark", store.currentState === "STATE_SCREEN_OFF_MONITOR");
 
-    nodes.buttonHints.innerHTML = "";
-    description.hints.forEach(function (hint) {
-      var item = document.createElement("li");
-      item.textContent = hint;
-      nodes.buttonHints.appendChild(item);
-    });
+    var inlineHints = getInlineButtonHints();
+    if (nodes.b1Hint) nodes.b1Hint.textContent = inlineHints.b1;
+    if (nodes.b2Hint) nodes.b2Hint.textContent = inlineHints.b2;
+    if (nodes.b3Hint) nodes.b3Hint.textContent = inlineHints.b3;
 
     renderTransitionHints();
 

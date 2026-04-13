@@ -9,32 +9,35 @@
   <link rel="stylesheet" href="../css/print.css" media="print">
 </head>
 <body data-page="simulator">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <div class="site-shell">
     <header class="site-header no-print">
-      <a class="brand" href="../index.html">
+      <a class="brand" href="../index.html" aria-label="Fish Feeder Demo home">
         <span class="brand-kicker">AgInno Institute</span>
         <span class="brand-title" data-i18n="nav.brandTitle">Fish Feeder Demo</span>
       </a>
       <div class="header-actions">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
-          <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+        <div class="header-switches">
+          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria-label="nav.language">
+            <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
+            <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+          </div>
         </div>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n="nav.menu">Menu</button>
       </div>
-      <nav id="site-nav" class="site-nav">
+      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
         <a href="../index.html" data-i18n="nav.overview">Overview</a>
         <a href="specs.html" data-i18n="nav.specs">LED + Specs</a>
         <a href="gallery.html" data-i18n="nav.gallery">Screens Gallery</a>
-        <a href="simulator.html" data-i18n="nav.simulator">Simulator</a>
+        <a href="simulator.html" data-i18n="nav.simulator" aria-current="page">Simulator</a>
       </nav>
     </header>
 
-    <main>
-      <section class="hero-panel">
+    <main id="main-content">
+      <section id="simulator-hero" class="hero-panel" aria-labelledby="simulator-hero-heading">
         <div class="hero-copy">
           <p class="eyebrow" data-i18n="simulatorPage.eyebrow">Interactive screen flow</p>
-          <h1 data-i18n="simulatorPage.heading">Press buttons, rotate the encoder, and watch the state machine move.</h1>
+          <h1 id="simulator-hero-heading" data-i18n="simulatorPage.heading">Press buttons, rotate the encoder, and watch the state machine move.</h1>
           <p class="hero-text" data-i18n="simulatorPage.body">The simulator follows the firmware menu order, preserves the special home shortcuts, models editable fields, and computes LED output from live sensor inputs.</p>
         </div>
         <div class="hero-actions no-print">
@@ -43,7 +46,7 @@
         </div>
       </section>
 
-      <section class="section-block simulator-grid">
+      <section id="simulator-workbench" class="section-block simulator-grid" aria-labelledby="state-title">
         <div class="simulator-stage">
           <article class="simulator-device">
             <div class="device-topline">
@@ -83,9 +86,18 @@
               <div class="control-card">
                 <p class="device-label" data-i18n="simulatorPage.buttons">Buttons</p>
                 <div class="button-row">
-                  <button type="button" class="button button-sim" data-control="B1">B1</button>
-                  <button type="button" class="button button-sim" data-control="B2">B2</button>
-                  <button type="button" class="button button-sim" data-control="B3">B3</button>
+                  <div class="button-hint-group">
+                    <button type="button" class="button button-sim" data-control="B1" aria-describedby="b1-hint">B1</button>
+                    <span id="b1-hint" class="btn-hint">Short: Next setting</span>
+                  </div>
+                  <div class="button-hint-group">
+                    <button type="button" class="button button-sim" data-control="B2" aria-describedby="b2-hint">B2</button>
+                    <span id="b2-hint" class="btn-hint">Short: Previous setting</span>
+                  </div>
+                  <div class="button-hint-group">
+                    <button type="button" class="button button-sim" data-control="B3" aria-describedby="b3-hint">B3</button>
+                    <span id="b3-hint" class="btn-hint">Short: Save or action</span>
+                  </div>
                 </div>
               </div>
 
@@ -105,7 +117,6 @@
           <article class="side-card no-print">
             <p class="device-label" data-i18n="simulatorPage.stateNotes">State notes</p>
             <p id="state-summary"></p>
-            <ul id="button-hints" class="plain-list"></ul>
           </article>
 
           <article class="side-card no-print">
@@ -144,8 +155,16 @@
     </main>
 
     <footer class="site-footer">
-      <p data-i18n="simulatorPage.footerLead">Static Fish Feeder demo for preview</p>
-      <p><span id="current-year"></span> • <span data-i18n="simulatorPage.footerStack">Alejandro Arteaga</span></p>
+      <div class="footer-meta">
+        <p data-i18n="simulatorPage.footerLead">Static Fish Feeder demo for preview</p>
+        <p><span id="current-year"></span> • <span data-i18n="simulatorPage.footerStack">Alejandro Arteaga</span></p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="../index.html">Overview</a>
+        <a href="specs.html">LED + Specs</a>
+        <a href="gallery.html">Screens Gallery</a>
+        <a href="simulator.html" aria-current="page">Simulator</a>
+      </nav>
     </footer>
   </div>
 

@@ -77,17 +77,31 @@
 
       var link = createElement("a", "button button-primary", t("dynamic.openFeature"));
       link.href = feature.href;
+      link.setAttribute("aria-label", feature.title);
       spotlight.appendChild(link);
 
       dots.querySelectorAll("button").forEach(function (button, index) {
-        button.classList.toggle("is-active", index === featureIndex);
+        var isActive = index === featureIndex;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
       });
+    }
+
+    function showPreviousFeature() {
+      featureIndex = (featureIndex - 1 + features.length) % features.length;
+      draw();
+    }
+
+    function showNextFeature() {
+      featureIndex = (featureIndex + 1) % features.length;
+      draw();
     }
 
     features.forEach(function (_, index) {
       var button = createElement("button", "feature-dot", "");
       button.type = "button";
       button.setAttribute("aria-label", t("dynamic.goToFeature", { index: index + 1 }));
+      button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", function () {
         featureIndex = index;
         draw();
@@ -95,14 +109,43 @@
       dots.appendChild(button);
     });
 
-    prev.onclick = function () {
-      featureIndex = (featureIndex - 1 + features.length) % features.length;
-      draw();
-    };
-    next.onclick = function () {
-      featureIndex = (featureIndex + 1) % features.length;
-      draw();
-    };
+    prev.onclick = showPreviousFeature;
+    next.onclick = showNextFeature;
+
+    if (!spotlight.dataset.boundSwipe) {
+      var touchStartX = 0;
+      var touchStartY = 0;
+
+      spotlight.dataset.boundSwipe = "true";
+      spotlight.addEventListener("touchstart", function (event) {
+        if (!event.touches || !event.touches.length) {
+          return;
+        }
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+
+      spotlight.addEventListener("touchend", function (event) {
+        if (!event.changedTouches || !event.changedTouches.length) {
+          return;
+        }
+
+        var deltaX = event.changedTouches[0].clientX - touchStartX;
+        var deltaY = event.changedTouches[0].clientY - touchStartY;
+
+        if (Math.abs(deltaX) < 40 || Math.abs(deltaX) <= Math.abs(deltaY)) {
+          return;
+        }
+
+        if (deltaX < 0) {
+          showNextFeature();
+          return;
+        }
+
+        showPreviousFeature();
+      }, { passive: true });
+    }
+
     draw();
   }
 

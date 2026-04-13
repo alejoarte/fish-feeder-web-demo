@@ -3,26 +3,51 @@
     var i18n = window.FishFeederI18n;
     var nav = document.getElementById("site-nav");
     var toggle = document.querySelector(".menu-toggle");
+    var header = document.querySelector(".site-header");
     var page = document.body ? document.body.getAttribute("data-page") : "";
+
+    function setMenuState(isOpen) {
+      if (nav) {
+        nav.classList.toggle("is-open", isOpen);
+      }
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", String(isOpen));
+      }
+      if (header) {
+        header.classList.toggle("is-menu-open", isOpen);
+      }
+    }
 
     if (toggle && nav) {
       toggle.addEventListener("click", function () {
-        var isOpen = nav.classList.toggle("is-open");
-        toggle.setAttribute("aria-expanded", String(isOpen));
+        setMenuState(!nav.classList.contains("is-open"));
       });
     }
 
     if (nav) {
       nav.querySelectorAll("a").forEach(function (link) {
         var href = link.getAttribute("href") || "";
+        var isCurrentPage = false;
         if (
           (page === "home" && href.indexOf("index.html") !== -1) ||
           (page === "specs" && href.indexOf("specs.html") !== -1) ||
           (page === "gallery" && href.indexOf("gallery.html") !== -1) ||
           (page === "simulator" && href.indexOf("simulator.html") !== -1)
         ) {
-          link.classList.add("is-active");
+          isCurrentPage = true;
         }
+        link.classList.toggle("is-active", isCurrentPage);
+        if (isCurrentPage) {
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+
+        link.addEventListener("click", function () {
+          if (window.innerWidth <= 760) {
+            setMenuState(false);
+          }
+        });
       });
     }
 
@@ -31,17 +56,31 @@
       yearNode.textContent = String(new Date().getFullYear());
     }
 
-    document.querySelectorAll("[data-lang-choice]").forEach(function (button) {
+    var langButtons = Array.from(document.querySelectorAll("[data-lang-choice]"));
+
+    function updateLanguagePressedState() {
+      var activeLanguage = i18n ? i18n.getLanguage() : "en";
+      langButtons.forEach(function (button) {
+        var selectedLanguage = button.getAttribute("data-lang-choice");
+        button.setAttribute("aria-pressed", String(selectedLanguage === activeLanguage));
+      });
+    }
+
+    langButtons.forEach(function (button) {
       button.addEventListener("click", function () {
         if (i18n) {
           i18n.setLanguage(button.getAttribute("data-lang-choice"));
         }
+        updateLanguagePressedState();
       });
     });
 
     if (i18n) {
       i18n.applyTranslations(document);
     }
+
+    updateLanguagePressedState();
+    setMenuState(false);
   }
 
   if (document.readyState === "loading") {

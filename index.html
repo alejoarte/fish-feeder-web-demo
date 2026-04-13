@@ -9,48 +9,51 @@
   <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body data-page="home">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <div class="site-shell">
     <header class="site-header no-print">
-      <a class="brand" href="index.html">
+      <a class="brand" href="index.html" aria-label="Fish Feeder Demo home">
         <span class="brand-kicker">AgInno Institute</span>
         <span class="brand-title" data-i18n="nav.brandTitle">Fish Feeder Demo</span>
       </a>
       <div class="header-actions">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
-          <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+        <div class="header-switches">
+          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria-label="nav.language">
+            <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
+            <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+          </div>
         </div>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n="nav.menu">Menu</button>
       </div>
-      <nav id="site-nav" class="site-nav">
-        <a href="index.html" data-i18n="nav.overview">Overview</a>
+      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="nav.overview" aria-current="page">Overview</a>
         <a href="pages/specs.html" data-i18n="nav.specs">LED + Specs</a>
         <a href="pages/gallery.html" data-i18n="nav.gallery">Screens Gallery</a>
         <a href="pages/simulator.html" data-i18n="nav.simulator">Simulator</a>
       </nav>
     </header>
 
-    <main>
-      <section class="hero-panel hero-home">
+    <main id="main-content">
+      <section id="home-hero" class="hero-panel hero-home" aria-labelledby="home-hero-heading">
         <div class="hero-copy">
           <p class="eyebrow" data-i18n="home.eyebrow">Firmware-informed public showcase</p>
-          <h1 data-i18n="home.heading">Explore the Fish Feeder without touching the hardware.</h1>
+          <h1 id="home-hero-heading" data-i18n="home.heading">Explore the Fish Feeder without touching the hardware.</h1>
           <p class="hero-text" data-i18n="home.body">This static web demo mirrors the real firmware screen order, button behavior, LED alert priorities, and the main monitoring and configuration flows.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="pages/simulator.html" data-i18n="home.launch">Launch simulator</a>
             <a class="button button-secondary" href="pages/gallery.html" data-i18n="home.browse">Browse all screens</a>
           </div>
           <ul class="hero-metrics">
-            <li><strong>21</strong><span data-i18n="home.metricsStates">UI states represented</span></li>
-            <li><strong>4</strong><span data-i18n="home.metricsPages">Main pages</span></li>
-            <li><strong>5</strong><span data-i18n="home.metricsPriority">LED priority levels</span></li>
+            <li aria-label="21 UI states represented"><strong>21</strong><span data-i18n="home.metricsStates">UI states represented</span></li>
+            <li aria-label="4 main pages"><strong>4</strong><span data-i18n="home.metricsPages">Main pages</span></li>
+            <li aria-label="5 LED priority levels"><strong>5</strong><span data-i18n="home.metricsPriority">LED priority levels</span></li>
           </ul>
         </div>
 
         <div class="hero-visual">
           <div class="status-orb status-blue"></div>
           <div class="lcd-preview-stack">
-            <article class="lcd-preview">
+            <article class="lcd-preview" aria-label="Main LCD preview 20 by 4 characters">
               <div class="lcd-header">
                 <span data-i18n="simulatorPage.mainLcd">Main LCD</span>
                 <span>20 x 4</span>
@@ -60,7 +63,7 @@ STATUS  IDLE
 LASTFD  07:30
 FISH    120</pre>
             </article>
-            <article class="lcd-preview lcd-preview-alt">
+            <article class="lcd-preview lcd-preview-alt" aria-label="Aux LCD preview 20 by 4 characters">
               <div class="lcd-header">
                 <span data-i18n="simulatorPage.auxLcd">Aux LCD</span>
                 <span>20 x 4</span>
@@ -74,25 +77,27 @@ LEVEL   14.0 cm</pre>
         </div>
       </section>
 
-      <section class="section-block no-print">
+      <section id="home-guided" class="section-block no-print" aria-labelledby="home-guided-heading" aria-label="Feature carousel" aria-roledescription="carousel">
         <div class="section-heading">
           <p class="eyebrow" data-i18n="home.guidedEyebrow">Guided exploration</p>
-          <h2 data-i18n="home.guidedHeading">Preview each destination before you open it.</h2>
+          <h2 id="home-guided-heading" data-i18n="home.guidedHeading">Preview each destination before you open it.</h2>
         </div>
 
         <div class="feature-spotlight">
-          <button id="feature-prev" class="icon-button" type="button" aria-label="Previous feature" data-i18n-aria-label="home.prevFeature">&#10094;</button>
           <article id="feature-spotlight" class="spotlight-card" aria-live="polite"></article>
-          <button id="feature-next" class="icon-button" type="button" aria-label="Next feature" data-i18n-aria-label="home.nextFeature">&#10095;</button>
         </div>
 
-        <div id="feature-dots" class="feature-dots" aria-label="Feature selector" data-i18n-aria-label="home.featureSelector"></div>
+        <div class="feature-controls">
+          <button id="feature-prev" class="icon-button feature-arrow" type="button" aria-label="Previous feature" data-i18n-aria-label="home.prevFeature">&#10094;</button>
+          <div id="feature-dots" class="feature-dots" aria-label="Feature selector" data-i18n-aria-label="home.featureSelector"></div>
+          <button id="feature-next" class="icon-button feature-arrow" type="button" aria-label="Next feature" data-i18n-aria-label="home.nextFeature">&#10095;</button>
+        </div>
       </section>
 
-      <section class="section-block">
+      <section id="home-paths" class="section-block" aria-labelledby="home-paths-heading">
         <div class="section-heading">
           <p class="eyebrow" data-i18n="home.pathsEyebrow">Fast paths</p>
-          <h2 data-i18n="home.pathsHeading">Everything the demo covers</h2>
+          <h2 id="home-paths-heading" data-i18n="home.pathsHeading">Everything the demo covers</h2>
         </div>
 
         <div class="card-grid card-grid-three">
@@ -108,7 +113,7 @@ LEVEL   14.0 cm</pre>
             <p data-i18n="home.cardGalleryBody">Scroll through the main screens by purpose, from home monitoring to sleep, purge, and factory reset confirmation.</p>
             <a class="text-link" href="pages/gallery.html" data-i18n="home.cardGalleryLink">Open screens gallery</a>
           </article>
-          <article class="info-card">
+          <article class="info-card is-featured">
             <span class="card-tag" data-i18n="home.cardSimulatorTag">Simulator</span>
             <h3 data-i18n="home.cardSimulatorTitle">Try the button and encoder logic</h3>
             <p data-i18n="home.cardSimulatorBody">Use B1, B2, B3, and the encoder controls to move across the actual menu order and preview runtime states.</p>
@@ -117,10 +122,10 @@ LEVEL   14.0 cm</pre>
         </div>
       </section>
 
-      <section class="section-block accent-band">
+      <section id="home-preserved" class="section-block accent-band" aria-labelledby="home-preserved-heading">
         <div class="section-heading">
           <p class="eyebrow" data-i18n="home.preservedEyebrow">Preserved from firmware</p>
-          <h2 data-i18n="home.preservedHeading">What stays faithful in this web demo</h2>
+          <h2 id="home-preserved-heading" data-i18n="home.preservedHeading">What stays faithful in this web demo</h2>
         </div>
 
         <div class="pill-row">
@@ -134,8 +139,16 @@ LEVEL   14.0 cm</pre>
     </main>
 
     <footer class="site-footer">
-      <p data-i18n="home.footerLead">Static Fish Feeder demo for preview</p>
-      <p><span id="current-year"></span> • <span data-i18n="home.footerStack">Alejandro Arteaga</span></p>
+      <div class="footer-meta">
+        <p data-i18n="home.footerLead">Static Fish Feeder demo for preview</p>
+        <p><span id="current-year"></span> • <span data-i18n="home.footerStack">Alejandro Arteaga</span></p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="index.html" aria-current="page">Overview</a>
+        <a href="pages/specs.html">LED + Specs</a>
+        <a href="pages/gallery.html">Screens Gallery</a>
+        <a href="pages/simulator.html">Simulator</a>
+      </nav>
     </footer>
   </div>
 

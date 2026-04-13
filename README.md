@@ -1,51 +1,17 @@
 # Fish Feeder Web Demo
 
-Static public web demo for the Fish Feeder firmware.
+This repository contains the public web experience for the Fish Feeder project, an automated feeding system for small-scale tilapia aquaculture developed in collaboration with the **AgInno Institute**. The purpose of this site is to present the system in a clear, professional, and accessible way for stakeholders, collaborators, and visitors who need to understand the product without connecting directly to the physical device.
 
-## What is included
+The web application explains the behavior and core functionalities of the Fish Feeder through a visual and interactive format. It introduces the system at a high level, documents LED status logic and technical thresholds, presents the full screen flow of the user interface, and provides an interactive simulator that reflects the firmware navigation model. This allows viewers to understand how the feeder monitors conditions, manages configuration, handles feeding and purge actions, and communicates system state through its display and RGB LED behavior.
 
-- `index.html` for the landing page
-- `pages/specs.html` for LED rules and printable technical specs
-- `pages/gallery.html` for the screen gallery
-- `pages/simulator.html` for the interactive simulator
-- `css/` for shared and print styles
-- `js/data/` for screen metadata, specs data, and LED rule logic
-- `js/app.js` for the landing, specs, and gallery pages
-- `js/simulator.js` for the interactive simulator state machine
-
-## Local preview
-
-This project is framework-free and does not need npm or a build step.
-
-You can try opening `index.html` directly, but using a lightweight local server is recommended for the most reliable browser behavior.
-
-### Option 1: Python
-
-From the `web-demo/` folder:
-
-```bash
-python -m http.server
-```
-
-Then open:
-
-`http://localhost:8000`
-
-### Option 2: VS Code / Cursor Live Server
-
-Open the `web-demo/` folder and run Live Server on `index.html`.
-
-## GitHub Pages deployment
-
-1. Put the `web-demo/` contents in a GitHub repository, or move the folder into a standalone repo.
-2. Keep the files static and preserve the relative paths.
-3. In GitHub repository settings, enable GitHub Pages.
-4. Set the publishing source to the branch root or to a `/docs` folder if you move the files there.
-5. Wait for the Pages deployment to complete.
-6. Verify navigation, scripts, styles, and assets from the published URL.
+The simulator is designed to stay close to the actual firmware logic, including screen order, button behavior, encoder-based editing, runtime states, and LED priority rules. The specifications section complements that experience with a print-friendly technical reference for sensors, thresholds, and component behavior, helping connect the public-facing explanation to the underlying embedded system design.
 
 ## Notes
 
-- The site uses plain HTML, CSS, and JavaScript only.
-- The simulator logic is client-side and data-driven.
-- The content is based on the Fish Feeder firmware UI and LED behavior, but it is packaged as an isolated folder so it can be moved later.
+This web experience is intended to communicate the purpose, behavior, and interface of the Fish Feeder system in a clear and accessible way for collaborators, stakeholders, and public visitors. It serves as a digital presentation of the project, helping users understand how the system operates, how it responds to different conditions, and how its interface supports monitoring and control.
+
+## Suggestions
+
+Feedback and suggestions are welcome. If you would like to propose improvements, report issues, or share ideas for the project, please contact:
+
+`aarteagarestrep@gmail.com`
