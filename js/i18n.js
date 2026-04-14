@@ -4,12 +4,16 @@
   var dictionary = {
     nav: {
       brandTitle: { en: "Fish Feeder Demo", es: "Demo del Alimentador de Peces" },
-      menu: { en: "Menu", es: "Menu" },
       overview: { en: "Overview", es: "Resumen" },
       specs: { en: "LED + Specs", es: "LED + Especificaciones" },
       gallery: { en: "Screens Gallery", es: "Galeria de Pantallas" },
       simulator: { en: "Simulator", es: "Simulador" },
-      language: { en: "Language", es: "Idioma" }
+      language: { en: "Language", es: "Idioma" },
+      menuToggleAria: { en: "Open site menu", es: "Abrir menu del sitio" },
+      brandHome: { en: "Fish Feeder Demo home", es: "Inicio del demo Fish Feeder" },
+      primaryNav: { en: "Primary navigation", es: "Navegacion principal" },
+      footerNav: { en: "Footer navigation", es: "Navegacion del pie" },
+      skipToContent: { en: "Skip to main content", es: "Saltar al contenido principal" }
     },
     home: {
       title: { en: "Fish Feeder Web Demo", es: "Demo Web del Alimentador de Peces" },
@@ -26,8 +30,28 @@
       launch: { en: "Launch simulator", es: "Abrir simulador" },
       browse: { en: "Browse all screens", es: "Ver todas las pantallas" },
       metricsStates: { en: "UI states represented", es: "Estados de UI representados" },
-      metricsPages: { en: "Main pages", es: "Paginas principales" },
+      metricsPages: { en: "Demo pages", es: "Paginas del demo" },
       metricsPriority: { en: "LED priority levels", es: "Niveles de prioridad LED" },
+      metricsStatesAria: { en: "21 UI states represented", es: "21 estados de UI representados" },
+      metricsPagesAria: { en: "4 demo pages", es: "4 paginas del demo" },
+      metricsPriorityAria: { en: "5 LED priority levels", es: "5 niveles de prioridad LED" },
+      lcdMainPreviewAria: {
+        en: "Main LCD preview 20 by 4 characters",
+        es: "Vista previa LCD principal 20 por 4 caracteres"
+      },
+      lcdAuxPreviewAria: {
+        en: "Aux LCD preview 20 by 4 characters",
+        es: "Vista previa LCD auxiliar 20 por 4 caracteres"
+      },
+      lcdMainPreviewText: {
+        en: "HOME           08:15\nDay Cycle: 34\nLast Feed: 07:30\nState: Halted",
+        es: "INICIO         08:15\nCiclo dia: 34\nUlt. comida: 07:30\nEstado: Detenido"
+      },
+      lcdAuxPreviewText: {
+        en: "Fish: 120\nWeight: 33g\npH: 7.3\nTemp: 24.4 C",
+        es: "Peces: 120\nPeso: 33g\npH: 7.3\nTemp: 24.4 C"
+      },
+      featureCarouselAria: { en: "Feature carousel", es: "Carrusel de funciones" },
       guidedEyebrow: { en: "Guided exploration", es: "Exploracion guiada" },
       guidedHeading: { en: "Preview each destination before you open it.", es: "Previsualiza cada destino antes de abrirlo." },
       prevFeature: { en: "Previous feature", es: "Caracteristica anterior" },
@@ -76,8 +100,16 @@
       testSimulator: { en: "Test rules in simulator", es: "Probar reglas en el simulador" },
       priorityEyebrow: { en: "Priority ladder", es: "Escalera de prioridad" },
       priorityHeading: { en: "LED decisions that must stay in this order", es: "Decisiones LED que deben mantenerse en este orden" },
+      priorityTablist: { en: "LED priority colors", es: "Colores de prioridad LED" },
+      priorityWhen: { en: "When it applies", es: "Cuando aplica" },
+      priorityMeaning: { en: "What it means", es: "Que significa" },
+      priorityRank: { en: "Priority {rank} of {total}", es: "Prioridad {rank} de {total}" },
       colorsEyebrow: { en: "Colors and triggers", es: "Colores y activadores" },
-      colorsHeading: { en: "Exact LED meanings", es: "Significados exactos del LED" },
+      colorsHeading: { en: "Technical details next", es: "Detalles tecnicos a continuacion" },
+      colorsIntro: {
+        en: "The interactive ladder above explains each LED color and priority. Use the component section below for GPIO pins, calibration, thresholds, and implementation notes.",
+        es: "La escalera interactiva de arriba explica cada color LED y su prioridad. Usa la seccion de componentes de abajo para pines GPIO, calibracion, umbrales y notas de implementacion."
+      },
       componentsEyebrow: { en: "Component details", es: "Detalles de componentes" },
       componentsHeading: { en: "Select a subsystem to inspect its rules and specs", es: "Selecciona un subsistema para inspeccionar sus reglas y especificaciones" },
       componentSelector: { en: "Component selector", es: "Selector de componentes" },
@@ -94,6 +126,7 @@
       body: { en: "This page groups the firmware screens by purpose so you can understand the monitoring, configuration, runtime, sleep, and reset experience without using the interactive simulator.", es: "Esta pagina agrupa las pantallas del firmware por proposito para entender la experiencia de monitoreo, configuracion, ejecucion, sueno y reinicio sin usar el simulador interactivo." },
       storyEyebrow: { en: "Screen story", es: "Historia de pantallas" },
       storyHeading: { en: "Visual catalog of states and transitions", es: "Catalogo visual de estados y transiciones" },
+      jumpLinksAria: { en: "Jump links", es: "Enlaces rapidos" },
       footerLead: { en: "Static Fish Feeder demo for preview", es: "Demo estatico de Fish Feeder para vista previa" },
       footerStack: { en: "Alejandro Arteaga", es: "Alejandro Arteaga" }
     },
@@ -101,7 +134,7 @@
       title: { en: "Fish Feeder Simulator", es: "Simulador Fish Feeder" },
       description: { en: "Interactive Fish Feeder simulator with firmware-based state order, button logic, encoder edits, and LED rules.", es: "Simulador interactivo de Fish Feeder con orden de estados basado en firmware, logica de botones, ediciones con encoder y reglas LED." },
       eyebrow: { en: "Interactive screen flow", es: "Flujo interactivo de pantallas" },
-      heading: { en: "Press buttons, rotate the encoder, and watch the state machine move.", es: "Presiona botones, gira el encoder y mira moverse la maquina de estados." },
+      heading: { en: "Press buttons, use the encoder, and watch the state machine move.", es: "Presiona los botones, usa el encoder y observa como avanza la maquina de estados." },
       body: { en: "The simulator follows the firmware menu order, preserves the special home shortcuts, models editable fields, and computes LED output from live sensor inputs.", es: "El simulador sigue el orden de menus del firmware, preserva los accesos especiales de inicio, modela campos editables y calcula la salida LED desde entradas de sensores en vivo." },
       reset: { en: "Reset simulator", es: "Reiniciar simulador" },
       compare: { en: "Compare with gallery", es: "Comparar con la galeria" },
@@ -117,10 +150,15 @@
       left: { en: "Left", es: "Izquierda" },
       press: { en: "Press", es: "Presionar" },
       right: { en: "Right", es: "Derecha" },
+      encoderGroupAria: { en: "Encoder", es: "Encoder" },
+      encoderLeftAria: { en: "Rotate encoder counterclockwise", es: "Girar encoder en sentido antihorario" },
+      encoderPressAria: { en: "Press encoder", es: "Pulsar encoder" },
+      encoderRightAria: { en: "Rotate encoder clockwise", es: "Girar encoder en sentido horario" },
       stateNotes: { en: "State notes", es: "Notas del estado" },
       transitionHints: { en: "Transition hints", es: "Pistas de transicion" },
       liveInputs: { en: "Live inputs", es: "Entradas en vivo" },
-      temperature: { en: "Temperature (C)", es: "Temperatura (C)" },
+      phLabel: { en: "pH", es: "pH" },
+      temperature: { en: "Temperature input (C)", es: "Entrada de temperatura (C)" },
       distance: { en: "Distance cm", es: "Distancia cm" },
       clock: { en: "Clock", es: "Reloj" },
       eventLog: { en: "Event log", es: "Registro de eventos" },

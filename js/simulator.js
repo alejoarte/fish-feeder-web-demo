@@ -4,90 +4,29 @@
   }
 
   var screensData = window.FishFeederScreensData || { screens: {}, menuOrder: [] };
+  var firmwareConfig = window.FishFeederFirmwareConfig;
+  var virtualLcd = window.FishFeederVirtualLcd;
   var ledRules = window.FishFeederLedRules || { evaluateLed: function () { return { label: "Off" }; } };
   var i18n = window.FishFeederI18n;
+  if (!firmwareConfig) {
+    throw new Error("FishFeederFirmwareConfig is required before simulator.js");
+  }
+  if (!virtualLcd) {
+    throw new Error("FishFeederVirtualLcd is required before simulator.js");
+  }
+
+  var V = virtualLcd.VirtualStr;
 
   function localize(value, lang) {
     return i18n ? i18n.localize(value, lang) : value;
   }
 
-  function text(en, es) {
-    return localize({ en: en, es: es });
+  function pair(en, es) {
+    return { en: en, es: es };
   }
 
   function translateLcdLine(line) {
-    var activeLanguage = store.saved.language;
-    if (activeLanguage !== 1 || !line) {
-      return line;
-    }
-
-    var replacements = [
-      ["DAY ", "DIA "],
-      ["STATUS", "ESTADO"],
-      ["LASTFD", "ULTALM"],
-      ["FISH", "PECES"],
-      ["WEIGHT", "PESO"],
-      ["LEVEL", "NIVEL"],
-      ["SET AMOUNT", "CANTIDAD"],
-      ["SET CYCLE", "CICLO"],
-      ["SET PURGE", "PURGA"],
-      ["SET TIME", "HORA"],
-      ["LANGUAGE", "IDIOMA"],
-      ["TEMP UNIT", "UNIDAD TEMP"],
-      ["POWER MENU", "MENU ENERGIA"],
-      ["MONITOR MODE", "MODO MONITOR"],
-      ["LIGHT SLEEP", "SUENO LIGERO"],
-      ["SLEEP BLOCKED", "SUENO BLOQ."],
-      ["FACTORY RESET", "REINICIO FAB."],
-      ["CONFIRM RESET", "CONFIRMAR"],
-      ["FEED RUNNING", "FEED ACTIVO"],
-      ["PURGE ACTIVE", "PURGA ACTIVA"],
-      ["Saved", "Guardado"],
-      ["Draft", "Borrador"],
-      ["English", "Ingles"],
-      ["Spanish", "Espanol"],
-      ["Field", "Campo"],
-      ["Weight", "Peso"],
-      ["Day", "Dia"],
-      ["Target", "Meta"],
-      ["Option", "Opcion"],
-      ["Next", "Siguiente"],
-      ["Remain", "Quedan"],
-      ["minute", "minuto"],
-      ["second", "segundo"],
-      ["hour", "hora"],
-      ["Screen off", "Pantalla apagada"],
-      ["Light sleep", "Sueno ligero"],
-      ["Manual feed", "Feed manual"],
-      ["Auto feed", "Feed automatico"],
-      ["LED blue", "LED azul"],
-      ["B1 cancel", "B1 cancela"],
-      ["B2 cancel", "B2 cancela"],
-      ["B3 save", "B3 guarda"],
-      ["ENC to adjust", "ENC ajusta"],
-      ["ENC toggle", "ENC alterna"],
-      ["ENC press field", "ENC cambia campo"],
-      ["ENC press mode", "ENC cambia modo"],
-      ["Mode by day", "Modo por dia"],
-      ["Mode by gram", "Modo por gramos"],
-      ["Preview state", "Estado previo"],
-      ["Status preview", "Vista de estado"],
-      ["Wake with B2", "Despierta con B2"],
-      ["Screen-off soon", "Pantalla se apaga"],
-      ["Cursor", "Cursor"],
-      ["Preview active", "Vista activa"],
-      ["Stay awake", "Mantener activo"],
-      ["Needs confirm", "Necesita confirmar"],
-      ["Reset all values", "Reinicia valores"],
-      ["All settings clear", "Todo se borra"],
-      ["Danger state", "Estado de riesgo"]
-    ];
-
-    var translated = line;
-    replacements.forEach(function (pair) {
-      translated = translated.replace(pair[0], pair[1]);
-    });
-    return translated;
+    return line;
   }
 
   var settingsStates = [
@@ -109,9 +48,11 @@
   var nodes = {
     stateTitle: document.getElementById("state-title"),
     stateSummary: document.getElementById("state-summary"),
-    b1Hint: document.getElementById("b1-hint"),
-    b2Hint: document.getElementById("b2-hint"),
-    b3Hint: document.getElementById("b3-hint"),
+    buttonHints: {
+      b1: document.getElementById("b1-hint-action"),
+      b2: document.getElementById("b2-hint-action"),
+      b3: document.getElementById("b3-hint-action")
+    },
     transitionHints: document.getElementById("transition-hints"),
     lcdMain: document.getElementById("lcd-main"),
     lcdAux: document.getElementById("lcd-aux"),
@@ -121,6 +62,7 @@
     eventLog: document.getElementById("event-log"),
     resetButton: document.getElementById("reset-simulator"),
     pressButtons: Array.from(document.querySelectorAll("[data-press-mode]")),
+    pressModeGroup: document.getElementById("press-mode-group"),
     controlButtons: Array.from(document.querySelectorAll("[data-control]")),
     ph: document.getElementById("sensor-ph"),
     temp: document.getElementById("sensor-temp"),
@@ -128,108 +70,152 @@
     time: document.getElementById("sensor-time")
   };
 
+  function hintLongUnused() {
+    return text("Not used", "Sin uso");
+  }
+
   function getInlineButtonHints() {
     if (store.currentState === "STATE_HOME") {
       return {
-        b1: "Short: Set Amount | Long: No action",
-        b2: "Short: Monitor | Long: Power menu",
-        b3: "Short: Feed run | Long: Purge hold"
+        b1: {
+          short: text("Set Amount", "Configurar Cantidad"),
+          long: text("No action", "Sin accion")
+        },
+        b2: {
+          short: text("Monitor", "Monitoreo"),
+          long: text("Power menu", "Menu energia")
+        },
+        b3: {
+          short: text("Feed run", "Alimentar"),
+          long: text("Purge hold", "Purga sostenida")
+        }
       };
     }
     if (store.currentState === "STATE_SET_PURGE") {
       return {
-        b1: "Short: Next | Long: Start timed purge",
-        b2: "Short: Previous setting",
-        b3: "Short: Save purge values"
+        b1: {
+          short: text("Next", "Siguiente"),
+          long: text("Start timed purge", "Iniciar purga")
+        },
+        b2: {
+          short: text("Previous setting", "Ajuste anterior"),
+          long: hintLongUnused()
+        },
+        b3: {
+          short: text("Save purge values", "Guardar valores de purga"),
+          long: hintLongUnused()
+        }
       };
     }
     if (store.currentState === "STATE_POWER_MENU") {
       return {
-        b1: "Short: Return home",
-        b2: "Short: Return home",
-        b3: "Short: Confirm power option"
+        b1: {
+          short: text("Return home", "Volver a inicio"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("Return home", "Volver a inicio"),
+          long: hintLongUnused()
+        },
+        b3: {
+          short: text("Confirm power option", "Confirmar opcion de energia"),
+          long: hintLongUnused()
+        }
       };
     }
     return {
-      b1: "Short: Next setting",
-      b2: "Short: Previous setting",
-      b3: "Short: Save or state action"
+      b1: {
+        short: text("Next setting", "Siguiente ajuste"),
+        long: hintLongUnused()
+      },
+      b2: {
+        short: text("Previous setting", "Ajuste anterior"),
+        long: hintLongUnused()
+      },
+      b3: {
+        short: text("Save or state action", "Guardar o accion del estado"),
+        long: hintLongUnused()
+      }
     };
   }
 
   function getStateNote(description) {
     var notesByState = {
-      STATE_HOME: "Ready state. Use buttons to open settings, monitor, or runtime actions.",
-      STATE_SET_AMOUNT: "Editing fish count. Rotate encoder to change value, then save with B3.",
-      STATE_SET_CYCLE: "Editing growth cycle. Encoder changes value; press encoder to switch mode.",
-      STATE_SET_PURGE: "Purge timer setup. Encoder edits minutes/seconds; B1 long starts purge.",
-      STATE_POWER_MENU: "Power decision point. Choose screen-off or sleep and confirm with B3.",
-      STATE_MONITOR_ENTRY: "Monitor preview active. It will transition automatically after countdown.",
-      STATE_SLEEP_ENTRY: "Sleep preview active. Simulator will return after countdown.",
-      STATE_FEED_RUNNING: "Runtime active. B1 short can cancel the current feeding cycle.",
-      STATE_PURGE_RUNNING: "Timed purge active. B1 short cancels and returns to setup.",
-      STATE_FACTORY_RESET_CONFIRM: "High-risk state. Use B1 long only when reset is intentional."
+      STATE_HOME: text(
+        "Ready state. Use buttons to open settings, monitor, or runtime actions.",
+        "Estado listo. Usa los botones para abrir ajustes, monitoreo o acciones de ejecucion."
+      ),
+      STATE_SET_AMOUNT: text(
+        "Editing fish count. Rotate encoder to change value, then save with B3.",
+        "Editando cantidad de peces. Gira el encoder para cambiar, luego guarda con B3."
+      ),
+      STATE_SET_CYCLE: text(
+        "Editing growth cycle. Encoder changes value; press encoder to switch mode.",
+        "Editando ciclo de crecimiento. Encoder cambia valor; presiona encoder para cambiar modo."
+      ),
+      STATE_SET_PURGE: text(
+        "Purge timer setup. Encoder edits minutes/seconds; B1 long starts purge.",
+        "Configuracion de purga. Encoder edita minutos/segundos; B1 larga inicia purga."
+      ),
+      STATE_POWER_MENU: text(
+        "Power decision point. Choose screen-off or sleep and confirm with B3.",
+        "Punto de decision de energia. Elige pantalla apagada o sueno y confirma con B3."
+      ),
+      STATE_MONITOR_ENTRY: text(
+        "Monitor preview active. It will transition automatically after countdown.",
+        "Vista previa de monitoreo activa. Transiciona automaticamente tras la cuenta regresiva."
+      ),
+      STATE_SLEEP_ENTRY: text(
+        "Sleep preview active. Simulator will return after countdown.",
+        "Vista previa de sueno activa. El simulador volvera tras la cuenta regresiva."
+      ),
+      STATE_FEED_RUNNING: text(
+        "Runtime active. B1 short can cancel the current feeding cycle.",
+        "Ejecucion activa. B1 corta puede cancelar el ciclo actual de alimentacion."
+      ),
+      STATE_PURGE_RUNNING: text(
+        "Timed purge active. B1 short cancels and returns to setup.",
+        "Purga temporizada activa. B1 corta cancela y vuelve a configuracion."
+      ),
+      STATE_FACTORY_RESET_CONFIRM: text(
+        "High-risk state. Use B1 long only when reset is intentional.",
+        "Estado de alto riesgo. Usa B1 larga solo cuando el reinicio sea intencional."
+      )
     };
-    return notesByState[store.currentState] || (description.summary || "Interact with controls to update this state.");
+    return (
+      notesByState[store.currentState] ||
+      description.summary ||
+      text("Interact with controls to update this state.", "Interactua con los controles para actualizar este estado.")
+    );
   }
 
   function maxFishCount(enclosure) {
-    return enclosure ? 2000 : 200;
+    return firmwareConfig.maxFishCountForEnclosure(enclosure);
   }
 
   function maxDayForGoal(goal) {
-    return goal ? 226 : 194;
+    return firmwareConfig.maxDayForGoal(goal);
   }
 
   function maxGramsForGoal(goal) {
-    return goal ? 688 : 454;
+    return firmwareConfig.maxGramsForGoal(goal);
   }
 
-  function estimateWeightByDay(day, goal) {
-    var maxDay = maxDayForGoal(goal);
-    var maxWeight = maxGramsForGoal(goal);
-    if (day <= 0) {
-      return 0;
-    }
-    var ratio = Math.min(day / maxDay, 1);
-    return Math.round(Math.pow(ratio, 1.18) * maxWeight);
+  function estimateWeightByDay(day) {
+    var weight = firmwareConfig.weightForDay(day);
+    return weight < 0 ? 0 : weight;
   }
 
   function closestDayForTargetGrams(target, goal) {
-    var bestDay = 0;
-    var bestDiff = Infinity;
-    for (var day = 0; day <= maxDayForGoal(goal); day += 1) {
-      var diff = Math.abs(estimateWeightByDay(day, goal) - target);
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        bestDay = day;
-      }
-    }
-    return bestDay;
-  }
-
-  function getFeedRate(dayCycle) {
-    if (dayCycle <= 28) return 9.49;
-    if (dayCycle <= 52) return 8.26;
-    return 7.63;
+    return firmwareConfig.closestDayForTargetGrams(target, goal);
   }
 
   function calculateFeedAmount(saved) {
-    var fishWeight = estimateWeightByDay(saved.dayCycle, saved.harvestGoal);
-    if (saved.dayCycle <= 0 || saved.fishCount <= 0) {
-      return 0;
-    }
-    if (saved.dayCycle <= 28) {
-      return saved.fishCount * (0.04 * fishWeight - 0.0004);
-    }
-    if (saved.dayCycle <= 52) {
-      return saved.fishCount * (0.03 * fishWeight - 0.00003);
-    }
-    return saved.fishCount * (0.015 * fishWeight + 0.0005);
+    return firmwareConfig.calculateFeedAmount(saved.fishCount, saved.dayCycle);
   }
 
   function calculateRuntimeMs(saved, grams) {
-    return Math.max(1000, Math.round((grams / getFeedRate(saved.dayCycle)) * 1000 + 5000));
+    return firmwareConfig.calculateRuntimeMs(saved.dayCycle, grams);
   }
 
   function clone(obj) {
@@ -251,7 +237,7 @@
       saved: {
         fishCount: 120,
         dayCycle: 34,
-        autoFeedEnabled: true,
+        autoFeedEnabled: firmwareConfig.defaults.autoFeedEnabled,
         feedAmHour: 7,
         feedAmMin: 30,
         feedPmHour: 18,
@@ -267,8 +253,8 @@
       draft: {
         amount: 120,
         dayCycle: 34,
-        targetGrams: estimateWeightByDay(34, 0),
-        autoFeedEnabled: true,
+        targetGrams: estimateWeightByDay(34),
+        autoFeedEnabled: firmwareConfig.defaults.autoFeedEnabled,
         feedAmHour: 7,
         feedAmMin: 30,
         feedPmHour: 18,
@@ -299,11 +285,29 @@
       },
       previewCountdownMs: 0,
       homePurgeActive: false,
-      eventLog: [text("Simulator ready", "Simulador listo")]
+      eventLog: [
+        {
+          time: String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0"),
+          message: pair("Simulator ready", "Simulador listo")
+        }
+      ]
     };
   }
 
   var store = createDefaultStore();
+
+  // Virtual device UI follows saved language (same as firmware gUiLanguage); not the site EN/ES toggle.
+  function deviceUiLang() {
+    return store.saved.language === 1 ? "es" : "en";
+  }
+
+  function text(en, es) {
+    return localize({ en: en, es: es }, deviceUiLang());
+  }
+
+  function vl(id) {
+    return virtualLcd.virtualTr(id, store.saved.language);
+  }
 
   function formatTime(date) {
     return String(date.getHours()).padStart(2, "0") + ":" + String(date.getMinutes()).padStart(2, "0");
@@ -315,7 +319,7 @@
 
   function logEvent(message) {
     var timestamp = formatTime(store.simulatedNow);
-    store.eventLog.unshift(timestamp + " - " + localize(message));
+    store.eventLog.unshift({ time: timestamp, message: message });
     store.eventLog = store.eventLog.slice(0, 8);
   }
 
@@ -326,7 +330,7 @@
     if (state === "STATE_SET_CYCLE") {
       store.draft.dayCycle = store.saved.dayCycle;
       store.draft.cycleMode = "day";
-      store.draft.targetGrams = estimateWeightByDay(store.saved.dayCycle, store.saved.harvestGoal);
+      store.draft.targetGrams = estimateWeightByDay(store.saved.dayCycle);
     }
     if (state === "STATE_SET_AUTO" || state === "STATE_SET_FEED_AM" || state === "STATE_SET_FEED_PM") {
       store.draft.autoFeedEnabled = store.saved.autoFeedEnabled;
@@ -380,7 +384,7 @@
   }
 
   function getCurrentWeight() {
-    return estimateWeightByDay(store.saved.dayCycle, store.saved.harvestGoal);
+    return estimateWeightByDay(store.saved.dayCycle);
   }
 
   function getDisplayedTemperatureCelsius() {
@@ -388,10 +392,11 @@
   }
 
   function getDisplayedTemperature() {
+    var L = store.saved.language;
     if (store.saved.tempUnit === 1) {
-      return ((store.sensors.temp * 9) / 5 + 32).toFixed(1) + " F";
+      return ((store.sensors.temp * 9) / 5 + 32).toFixed(1) + virtualLcd.virtualTr(V.SuffixTempF, L);
     }
-    return store.sensors.temp.toFixed(1) + " C";
+    return store.sensors.temp.toFixed(1) + virtualLcd.virtualTr(V.SuffixTempC, L);
   }
 
   function evaluateLedRule() {
@@ -439,7 +444,7 @@
   }
 
   function isSleepBlocked() {
-    return store.saved.autoFeedEnabled && secondsUntilNextFeed() <= 120;
+    return store.saved.autoFeedEnabled && secondsUntilNextFeed() <= firmwareConfig.runtime.preFeedWakeSec;
   }
 
   function moveNext() {
@@ -470,7 +475,12 @@
   function startFeedRuntime(isManual) {
     var grams = calculateFeedAmount(store.saved) / 2;
     if (grams <= 0) {
-      logEvent("Manual feed ignored because fish count or day cycle is zero");
+      logEvent(
+        pair(
+          "Manual feed ignored because fish count or day cycle is zero",
+          "Alimentacion manual ignorada porque peces o dia de ciclo es cero"
+        )
+      );
       render();
       return;
     }
@@ -481,7 +491,11 @@
         ? "STATE_HOME"
         : store.currentState;
     store.currentState = "STATE_FEED_RUNNING";
-    logEvent((isManual ? "Manual" : "Auto") + " feed runtime started");
+    logEvent(
+      isManual
+        ? pair("Manual feed runtime started", "Alimentacion manual iniciada")
+        : pair("Auto feed runtime started", "Alimentacion automatica iniciada")
+    );
     render();
   }
 
@@ -491,7 +505,12 @@
     store.runtime.remainingMs = totalSeconds * 1000;
     store.runtime.returnState = "STATE_HOME";
     store.currentState = "STATE_PURGE_RUNNING";
-    logEvent("Timed purge started for " + totalSeconds + " seconds");
+    logEvent(
+      pair(
+        "Timed purge started for " + totalSeconds + " seconds",
+        "Purga temporizada iniciada por " + totalSeconds + " segundos"
+      )
+    );
     render();
   }
 
@@ -506,14 +525,14 @@
     store.homePurgeActive = false;
     store.simulatedNow = fresh.simulatedNow;
     store.currentState = "STATE_HOME";
-    logEvent("Factory reset completed");
+    logEvent(pair("Factory reset completed", "Reinicio de fabrica completado"));
     render();
   }
 
   function saveCurrentScreen() {
     if (store.currentState === "STATE_SET_AMOUNT") {
       store.saved.fishCount = Math.min(maxFishCount(store.saved.enclosure), Math.max(0, store.draft.amount));
-      logEvent("Saved fish count");
+      logEvent(pair("Saved fish count", "Cantidad de peces guardada"));
     }
     if (store.currentState === "STATE_SET_CYCLE") {
       if (store.draft.cycleMode === "day") {
@@ -521,7 +540,7 @@
       } else {
         store.saved.dayCycle = closestDayForTargetGrams(store.draft.targetGrams, store.saved.harvestGoal);
       }
-      logEvent("Saved growth cycle");
+      logEvent(pair("Saved growth cycle", "Ciclo de crecimiento guardado"));
     }
     if (store.currentState === "STATE_SET_AUTO" || store.currentState === "STATE_SET_FEED_AM" || store.currentState === "STATE_SET_FEED_PM") {
       store.saved.autoFeedEnabled = store.draft.autoFeedEnabled;
@@ -529,17 +548,17 @@
       store.saved.feedAmMin = store.draft.feedAmMin;
       store.saved.feedPmHour = store.draft.feedPmHour;
       store.saved.feedPmMin = store.draft.feedPmMin;
-      logEvent("Saved auto-feed settings");
+      logEvent(pair("Saved auto-feed settings", "Configuracion de auto-feed guardada"));
     }
     if (store.currentState === "STATE_SET_ENCLOSURE") {
       store.saved.enclosure = store.draft.enclosure;
       store.saved.fishCount = Math.min(store.saved.fishCount, maxFishCount(store.saved.enclosure));
-      logEvent("Saved enclosure");
+      logEvent(pair("Saved enclosure", "Recinto guardado"));
     }
     if (store.currentState === "STATE_SET_HARVEST_GOAL") {
       store.saved.harvestGoal = store.draft.harvestGoal;
       store.saved.dayCycle = Math.min(store.saved.dayCycle, maxDayForGoal(store.saved.harvestGoal));
-      logEvent("Saved harvest goal");
+      logEvent(pair("Saved harvest goal", "Meta de cosecha guardada"));
     }
     if (store.currentState === "STATE_SET_TIME") {
       store.simulatedNow = new Date(
@@ -551,15 +570,15 @@
         0,
         0
       );
-      logEvent("Saved RTC time");
+      logEvent(pair("Saved RTC time", "Hora del RTC guardada"));
     }
     if (store.currentState === "STATE_SET_LANGUAGE") {
       store.saved.language = store.draft.language;
-      logEvent(text("Saved language", "Idioma guardado"));
+      logEvent(pair("Saved language", "Idioma guardado"));
     }
     if (store.currentState === "STATE_SET_TEMP_UNIT") {
       store.saved.tempUnit = store.draft.tempUnit;
-      logEvent("Saved temperature unit");
+      logEvent(pair("Saved temperature unit", "Unidad de temperatura guardada"));
     }
     render();
   }
@@ -570,7 +589,7 @@
     if (button === "B1") {
       if (state === "STATE_SLEEP_BLOCKED") {
         setState("STATE_HOME");
-        logEvent("Returned home from sleep blocked");
+        logEvent(pair("Returned home from sleep blocked", "Volvio a inicio desde sueno bloqueado"));
         return;
       }
       if (state === "STATE_FACTORY_RESET_CONFIRM") {
@@ -578,7 +597,7 @@
           performFactoryReset();
         } else {
           setState("STATE_FACTORY_RESET");
-          logEvent("Left reset confirm");
+          logEvent(pair("Left reset confirm", "Salio de confirmar reinicio"));
         }
         return;
       }
@@ -586,17 +605,17 @@
         if (state === "STATE_PURGE_RUNNING") {
           store.runtime.kind = null;
           setState("STATE_SET_PURGE");
-          logEvent("Timed purge canceled");
+          logEvent(pair("Timed purge canceled", "Purga temporizada cancelada"));
           return;
         }
         if (state === "STATE_FEED_RUNNING") {
           store.runtime.kind = null;
           setState(store.runtime.returnState || "STATE_HOME");
-          logEvent("Feed runtime canceled");
+          logEvent(pair("Feed runtime canceled", "Alimentacion cancelada"));
           return;
         }
         moveNext();
-        logEvent("B1 short moved to next state");
+        logEvent(pair("B1 short moved to next state", "B1 corta cambio al siguiente estado"));
         return;
       }
       if (mode === "long" && state === "STATE_SET_PURGE") {
@@ -613,33 +632,33 @@
         state === "STATE_SCREEN_OFF_MONITOR"
       ) {
         setState("STATE_HOME");
-        logEvent("B2 returned home");
+        logEvent(pair("B2 returned home", "B2 volvio a inicio"));
         return;
       }
       if (state === "STATE_FACTORY_RESET_CONFIRM") {
         setState("STATE_FACTORY_RESET");
-        logEvent("Canceled reset confirmation");
+        logEvent(pair("Canceled reset confirmation", "Confirmacion de reinicio cancelada"));
         return;
       }
       if (mode === "short") {
         if (state === "STATE_PURGE_RUNNING" || state === "STATE_FEED_RUNNING") {
-          logEvent("B2 has no short action in runtime");
+          logEvent(pair("B2 has no short action in runtime", "B2 no tiene accion corta en ejecucion"));
           render();
           return;
         }
         if (state === "STATE_HOME") {
-          store.previewCountdownMs = 15000;
+          store.previewCountdownMs = firmwareConfig.runtime.previewCountdownMs;
           setState("STATE_MONITOR_ENTRY");
-          logEvent("Entered monitor preview");
+          logEvent(pair("Entered monitor preview", "Entro a vista previa de monitoreo"));
           return;
         }
         movePrevious();
-        logEvent("B2 short moved to previous state");
+        logEvent(pair("B2 short moved to previous state", "B2 corta cambio al estado anterior"));
         return;
       }
       if (mode === "long" && state === "STATE_HOME") {
         setState("STATE_POWER_MENU");
-        logEvent("Opened power menu");
+        logEvent(pair("Opened power menu", "Abrio menu de energia"));
         return;
       }
     }
@@ -652,27 +671,27 @@
         }
         if (state === "STATE_POWER_MENU") {
           if (store.powerOption === "screenOff") {
-            store.previewCountdownMs = 15000;
+            store.previewCountdownMs = firmwareConfig.runtime.previewCountdownMs;
             setState("STATE_MONITOR_ENTRY");
-            logEvent("Power menu selected screen off");
+            logEvent(pair("Power menu selected screen off", "Menu energia selecciono pantalla apagada"));
           } else if (isSleepBlocked()) {
             setState("STATE_SLEEP_BLOCKED");
-            logEvent("Light sleep blocked by upcoming feed");
+            logEvent(pair("Light sleep blocked by upcoming feed", "Sueno ligero bloqueado por alimentacion proxima"));
           } else {
-            store.previewCountdownMs = 15000;
+            store.previewCountdownMs = firmwareConfig.runtime.previewCountdownMs;
             setState("STATE_SLEEP_ENTRY");
-            logEvent("Entered sleep preview");
+            logEvent(pair("Entered sleep preview", "Entro a vista previa de sueno"));
           }
           return;
         }
         if (state === "STATE_FACTORY_RESET") {
           setState("STATE_FACTORY_RESET_CONFIRM");
-          logEvent("Entered reset confirmation");
+          logEvent(pair("Entered reset confirmation", "Entro a confirmacion de reinicio"));
           return;
         }
         if (state === "STATE_FACTORY_RESET_CONFIRM") {
           setState("STATE_FACTORY_RESET");
-          logEvent("Toggled back to reset intro");
+          logEvent(pair("Toggled back to reset intro", "Volvio a introduccion de reinicio"));
           return;
         }
         if (
@@ -690,7 +709,11 @@
 
       if (mode === "long" && state === "STATE_HOME") {
         store.homePurgeActive = !store.homePurgeActive;
-        logEvent(store.homePurgeActive ? "Manual purge hold simulated" : "Manual purge hold stopped");
+        logEvent(
+          store.homePurgeActive
+            ? pair("Manual purge hold simulated", "Purga manual sostenida simulada")
+            : pair("Manual purge hold stopped", "Purga manual sostenida detenida")
+        );
         render();
       }
     }
@@ -744,14 +767,18 @@
       }
     } else if (state === "STATE_SET_PURGE") {
       if (store.draft.purgeField === 0) {
-        store.draft.purgeMinutes = clamp(store.draft.purgeMinutes + direction, 0, 10);
+        store.draft.purgeMinutes = clamp(
+          store.draft.purgeMinutes + direction,
+          0,
+          Math.floor(firmwareConfig.limits.purgeTotalSecMax / 60)
+        );
       } else {
         store.draft.purgeSeconds = clamp(store.draft.purgeSeconds + direction, 0, 59);
       }
       var totalSeconds = store.draft.purgeMinutes * 60 + store.draft.purgeSeconds;
-      if (totalSeconds > 600) {
-        totalSeconds = 600;
-        store.draft.purgeMinutes = 10;
+      if (totalSeconds > firmwareConfig.limits.purgeTotalSecMax) {
+        totalSeconds = firmwareConfig.limits.purgeTotalSecMax;
+        store.draft.purgeMinutes = Math.floor(firmwareConfig.limits.purgeTotalSecMax / 60);
         store.draft.purgeSeconds = 0;
       }
     }
@@ -765,7 +792,7 @@
     } else if (state === "STATE_SET_CYCLE") {
       if (store.draft.cycleMode === "day") {
         store.draft.cycleMode = "weight";
-        store.draft.targetGrams = estimateWeightByDay(store.draft.dayCycle, store.saved.harvestGoal);
+        store.draft.targetGrams = estimateWeightByDay(store.draft.dayCycle);
       } else {
         store.draft.cycleMode = "day";
         store.draft.dayCycle = closestDayForTargetGrams(store.draft.targetGrams, store.saved.harvestGoal);
@@ -782,178 +809,384 @@
     return screensData.screens[state] ? screensData.screens[state].title : state;
   }
 
+  function formatSleepEntryCountdown(secondsUntilNextFeed) {
+    var totalMinutes = Math.ceil(secondsUntilNextFeed / 60);
+    if (totalMinutes < 60) {
+      return totalMinutes + "m";
+    }
+    var hours = Math.floor(totalMinutes / 60);
+    var minutes = totalMinutes % 60;
+    if (minutes === 0) {
+      return hours + "h";
+    }
+    return hours + "h " + minutes + "m";
+  }
+
+  function secUp(ms) {
+    return Math.max(1, Math.ceil(ms / 1000));
+  }
+
   function describeState() {
     var state = store.currentState;
     var screen = screensData.screens[state] || {};
     var weight = getCurrentWeight();
-    var status = "Idle";
-    if (store.homePurgeActive) {
-      status = "Purging";
-    }
-    if (store.runtime.kind === "manualFeed" && state === "STATE_FEED_RUNNING") {
-      status = "Manual";
-    }
-    if (store.runtime.kind === "autoFeed" && state === "STATE_FEED_RUNNING") {
-      status = "Feeding";
+
+    function padHomeLine(title, timeStr) {
+      var total = 20;
+      var gap = total - title.length - timeStr.length;
+      if (gap < 0) {
+        return (title + timeStr).slice(0, total);
+      }
+      return title + " ".repeat(gap) + timeStr;
     }
 
     var main = [];
     var aux = [];
+    var rtcSectionIds = [V.SecDay, V.SecMonth, V.SecYear, V.SecHour, V.SecMinute];
 
     if (state === "STATE_HOME") {
+      var statusId = V.StatusHalted;
+      if (store.homePurgeActive) {
+        statusId = V.StatusPurging;
+      }
+      var timeStr = formatTime(store.simulatedNow);
       main = [
-        "DAY " + String(store.saved.dayCycle).padStart(3, "0") + "  " + formatTime(store.simulatedNow),
-        "STATUS  " + status.toUpperCase(),
-        "LASTFD  " + store.saved.lastFeed,
-        "FISH    " + store.saved.fishCount
+        padHomeLine(vl(V.HomeTitle), timeStr),
+        vl(V.LblDayCycle) + store.saved.dayCycle,
+        vl(V.LblLastFeed) + store.saved.lastFeed,
+        vl(V.LblState) + vl(statusId)
       ];
       aux = [
-        "WEIGHT  " + weight + " g",
-        "pH      " + store.sensors.ph.toFixed(1),
-        "TEMP    " + getDisplayedTemperature(),
-        "LEVEL   " + store.sensors.distance.toFixed(1) + " cm"
+        vl(V.LblFish) + store.saved.fishCount,
+        vl(V.LblWeight) + weight + "g",
+        vl(V.LblPh) + store.sensors.ph.toFixed(1),
+        vl(V.LblTemp) + getDisplayedTemperature()
       ];
     } else if (state === "STATE_SET_AMOUNT") {
-      main = ["SET AMOUNT", "Saved " + store.saved.fishCount, "Draft " + store.draft.amount, "ENC to adjust"];
-      aux = ["B3 save", "B1 next", "B2 previous", ""];
+      main = [
+        vl(V.ConfigAmount),
+        vl(V.LblCurrentAmount) + store.saved.fishCount,
+        "",
+        vl(V.PressB3Save)
+      ];
+      aux = [vl(V.LblChanging), ">>> " + store.draft.amount + " <<<", "", vl(V.TurnDial)];
     } else if (state === "STATE_SET_CYCLE") {
       if (store.draft.cycleMode === "day") {
-        main = [
-          "SET CYCLE",
-          "Mode by day",
-          "Day " + String(store.draft.dayCycle).padStart(3, "0"),
-          "Weight " + estimateWeightByDay(store.draft.dayCycle, store.saved.harvestGoal) + " g"
+        var tableWeight = estimateWeightByDay(store.draft.dayCycle);
+        main = [vl(V.ConfigGrowth), vl(V.SavedDay) + store.saved.dayCycle, "", vl(V.PressB3Save)];
+        aux = [
+          vl(V.LblMode) + vl(V.ModeByDay),
+          vl(V.LblNewDay) + store.draft.dayCycle,
+          vl(V.LblTable) + tableWeight + "g",
+          vl(V.SwModeDialEdit)
         ];
       } else {
         var matchedDay = closestDayForTargetGrams(store.draft.targetGrams, store.saved.harvestGoal);
-        main = [
-          "SET CYCLE",
-          "Mode by gram",
-          "Target " + store.draft.targetGrams + " g",
-          "Match D" + matchedDay
+        main = [vl(V.ConfigGrowth), vl(V.SavedDay) + store.saved.dayCycle, "", vl(V.PressB3Save)];
+        aux = [
+          vl(V.LblMode) + vl(V.ModeByGram),
+          vl(V.LblTarget) + store.draft.targetGrams + "g",
+          vl(V.LblMatch) + estimateWeightByDay(matchedDay) + "g d" + matchedDay,
+          vl(V.SwModeDialEdit)
         ];
       }
-      aux = ["ENC press mode", "Saved D" + store.saved.dayCycle, "B3 save", ""];
     } else if (state === "STATE_SET_AUTO") {
-      main = ["AUTO FEED", "Saved " + (store.saved.autoFeedEnabled ? "YES" : "NO"), "Draft " + (store.draft.autoFeedEnabled ? "YES" : "NO"), "ENC toggle"];
-      aux = ["B3 save", "", "", ""];
+      main = [
+        vl(V.ConfigAutoFeed),
+        vl(V.Saved) + virtualLcd.virtualYesNo(store.saved.autoFeedEnabled, store.saved.language),
+        "",
+        vl(V.PressB3Save)
+      ];
+      aux = [
+        vl(V.SystemAuto),
+        ">>> " + virtualLcd.virtualYesNo(store.draft.autoFeedEnabled, store.saved.language) + " <<<",
+        "",
+        vl(V.TurnDial)
+      ];
     } else if (state === "STATE_SET_FEED_AM") {
       main = [
-        "FEED AM",
-        "Saved " + String(store.saved.feedAmHour).padStart(2, "0") + ":" + String(store.saved.feedAmMin).padStart(2, "0"),
-        "Draft " + String(store.draft.feedAmHour).padStart(2, "0") + ":" + String(store.draft.feedAmMin).padStart(2, "0"),
-        "Field " + (store.draft.feedField === 0 ? "hour" : "minute")
+        vl(V.ConfigAmFeed),
+        vl(V.SavedTimePrefix) +
+          String(store.saved.feedAmHour).padStart(2, "0") +
+          ":" +
+          String(store.saved.feedAmMin).padStart(2, "0"),
+        "",
+        vl(V.PressB3Save)
       ];
-      aux = ["ENC press field", "B3 save", "", ""];
+      aux = [
+        vl(V.NewTime),
+        String(store.draft.feedAmHour).padStart(2, "0") + ":" + String(store.draft.feedAmMin).padStart(2, "0"),
+        vl(store.draft.feedField === 0 ? V.SecHour : V.SecMinute),
+        vl(V.SwHourMin)
+      ];
     } else if (state === "STATE_SET_FEED_PM") {
       main = [
-        "FEED PM",
-        "Saved " + String(store.saved.feedPmHour).padStart(2, "0") + ":" + String(store.saved.feedPmMin).padStart(2, "0"),
-        "Draft " + String(store.draft.feedPmHour).padStart(2, "0") + ":" + String(store.draft.feedPmMin).padStart(2, "0"),
-        "Field " + (store.draft.feedField === 0 ? "hour" : "minute")
+        vl(V.ConfigPmFeed),
+        vl(V.SavedTimePrefix) +
+          String(store.saved.feedPmHour).padStart(2, "0") +
+          ":" +
+          String(store.saved.feedPmMin).padStart(2, "0"),
+        "",
+        vl(V.PressB3Save)
       ];
-      aux = ["ENC press field", "B3 save", "", ""];
+      aux = [
+        vl(V.NewTime),
+        String(store.draft.feedPmHour).padStart(2, "0") + ":" + String(store.draft.feedPmMin).padStart(2, "0"),
+        vl(store.draft.feedField === 0 ? V.SecHour : V.SecMinute),
+        vl(V.SwHourMin)
+      ];
     } else if (state === "STATE_SET_PURGE") {
-      main = [
-        "SET PURGE",
-        "Total " + String(store.draft.purgeMinutes).padStart(2, "0") + ":" + String(store.draft.purgeSeconds).padStart(2, "0"),
-        "Field " + (store.draft.purgeField === 0 ? "minute" : "second"),
-        "B1 long to run"
+      var purgeTotal = store.draft.purgeMinutes * 60 + store.draft.purgeSeconds;
+      var purgeTop = vl(V.PurgeTotalLabel) + store.draft.purgeMinutes + "m" + store.draft.purgeSeconds + "s(" + purgeTotal + "s)";
+      if (purgeTop.length > 20) purgeTop = vl(V.PurgeTotalLabel) + purgeTotal + "s";
+      main = [purgeTop, vl(V.ConfigPurge), "", vl(V.PurgeHoldB1Run)];
+      aux = [
+        vl(V.PurgeLblMin) +
+          (store.draft.purgeField === 0 ? ">>> " + store.draft.purgeMinutes + " <<<" : "    " + store.draft.purgeMinutes),
+        vl(V.PurgeLblSec) +
+          (store.draft.purgeField === 1 ? ">>> " + store.draft.purgeSeconds + " <<<" : "    " + store.draft.purgeSeconds),
+        vl(V.PurgeSwMinSec),
+        vl(V.TurnDial)
       ];
-      aux = ["ENC press field", "B2 previous", "", ""];
     } else if (state === "STATE_PURGE_RUNNING") {
-      main = ["PURGE ACTIVE", "Remain " + Math.ceil(store.runtime.remainingMs / 1000) + " sec", "Motor reverse", "LED blue"];
-      aux = ["B1 cancel", "Ends at home", "", ""];
+      var leftSec = vl(V.PurgeLeftPrefix) + secUp(store.runtime.remainingMs) + "s";
+      main = [vl(V.PurgeRunning), leftSec, "", vl(V.PurgePressB1Cancel)];
+      aux = [leftSec, "", vl(V.PurgePressB1Cancel), ""];
     } else if (state === "STATE_FEED_RUNNING") {
-      main = [
-        "FEED RUNNING",
-        store.runtime.kind === "manualFeed" ? "Manual feed" : "Auto feed",
-        "Remain " + Math.ceil(store.runtime.remainingMs / 1000) + " sec",
-        "LED blue"
+      var feedLine3 =
+        store.runtime.kind === "manualFeed" ? vl(V.StatusManual) : vl(V.StatusFeeding);
+      var leftFeed = vl(V.PurgeLeftPrefix) + secUp(store.runtime.remainingMs) + "s";
+      main = [vl(V.FeedRunningTitle), leftFeed, feedLine3, vl(V.PurgePressB1Cancel)];
+      aux = [
+        vl(V.LblFish) + store.saved.fishCount,
+        vl(V.LblWeight) + weight + "g",
+        vl(V.LblDayCycle) + store.saved.dayCycle,
+        vl(V.PurgePressB1Cancel)
       ];
-      aux = ["Fish " + store.saved.fishCount, "Weight " + weight + " g", "Day " + store.saved.dayCycle, "B1 cancel"];
     } else if (state === "STATE_SET_ENCLOSURE") {
-      main = ["ENCLOSURE", "Saved " + (store.saved.enclosure ? "pond" : "tank"), "Draft " + (store.draft.enclosure ? "pond" : "tank"), "Cap " + maxFishCount(store.draft.enclosure)];
-      aux = ["ENC toggle", "B3 save", "", ""];
+      main = [
+        vl(V.ConfigEnclosure),
+        vl(V.Saved) + virtualLcd.virtualEnclosureName(store.saved.enclosure, store.saved.language),
+        vl(V.LblMaxFish) + maxFishCount(store.saved.enclosure),
+        vl(V.PressB3Save)
+      ];
+      aux = [
+        vl(V.LblEnclosure),
+        ">>> " + virtualLcd.virtualEnclosureName(store.draft.enclosure, store.saved.language) + " <<<",
+        vl(V.LblMaxFish) + maxFishCount(store.draft.enclosure),
+        vl(V.TurnDial)
+      ];
     } else if (state === "STATE_SET_HARVEST_GOAL") {
-      main = ["HARVEST GOAL", "Saved " + (store.saved.harvestGoal ? "1.5 lb" : "1.0 lb"), "Draft " + (store.draft.harvestGoal ? "1.5 lb" : "1.0 lb"), "Max day " + maxDayForGoal(store.draft.harvestGoal)];
-      aux = ["ENC toggle", "B3 save", "", ""];
+      main = [
+        vl(V.ConfigHarvestGoal),
+        vl(V.Saved) + virtualLcd.virtualHarvestGoalName(store.saved.harvestGoal, store.saved.language),
+        vl(V.LblMaxGrowthDay) + maxDayForGoal(store.saved.harvestGoal),
+        vl(V.PressB3Save)
+      ];
+      aux = [
+        vl(V.LblHarvestGoal),
+        ">>> " + virtualLcd.virtualHarvestGoalName(store.draft.harvestGoal, store.saved.language) + " <<<",
+        vl(V.LblMaxGrowthDay) + maxDayForGoal(store.draft.harvestGoal),
+        vl(V.TurnDial)
+      ];
     } else if (state === "STATE_SET_TIME") {
       main = [
-        "SET TIME",
-        String(store.draft.time.day).padStart(2, "0") + "/" + String(store.draft.time.month).padStart(2, "0") + "/" + store.draft.time.year,
-        String(store.draft.time.hour).padStart(2, "0") + ":" + String(store.draft.time.minute).padStart(2, "0"),
-        "Cursor " + ["day", "month", "year", "hour", "minute"][store.draft.time.cursor]
+        vl(V.ConfigDateTime),
+        vl(V.LblCurrent) +
+          store.simulatedNow.getDate() +
+          "/" +
+          (store.simulatedNow.getMonth() + 1) +
+          "/" +
+          store.simulatedNow.getFullYear(),
+        "         " +
+          String(store.simulatedNow.getHours()).padStart(2, "0") +
+          ":" +
+          String(store.simulatedNow.getMinutes()).padStart(2, "0"),
+        vl(V.PressB3Save)
       ];
-      aux = ["ENC press field", "B3 save", "", ""];
+      aux = [
+        vl(V.LblChanging),
+        store.draft.time.day + "/" + store.draft.time.month + "/" + store.draft.time.year,
+        String(store.draft.time.hour).padStart(2, "0") + ":" + String(store.draft.time.minute).padStart(2, "0"),
+        vl(rtcSectionIds[store.draft.time.cursor])
+      ];
     } else if (state === "STATE_SET_LANGUAGE") {
-      main = ["LANGUAGE", "Saved " + (store.saved.language ? "Spanish" : "English"), "Draft " + (store.draft.language ? "Spanish" : "English"), "ENC toggle"];
-      aux = ["B3 save", "", "", ""];
+      var sv = store.saved.language;
+      var dv = store.draft.language;
+      main = [
+        virtualLcd.virtualTr(V.ConfigLanguage, sv),
+        virtualLcd.virtualTr(V.Saved, sv) + virtualLcd.virtualLanguageName(sv, sv),
+        "",
+        virtualLcd.virtualTr(V.PressB3Save, sv)
+      ];
+      aux = [
+        virtualLcd.virtualTr(V.LblLanguage, sv),
+        ">>> " + virtualLcd.virtualLanguageName(dv, sv) + " <<<",
+        "",
+        virtualLcd.virtualTr(V.TurnDial, sv)
+      ];
     } else if (state === "STATE_SET_TEMP_UNIT") {
-      main = ["TEMP UNIT", "Saved " + (store.saved.tempUnit ? "F" : "C"), "Draft " + (store.draft.tempUnit ? "F" : "C"), "ENC toggle"];
-      aux = ["B3 save", "", "", ""];
+      main = [
+        vl(V.ConfigTempUnit),
+        vl(V.Saved) + virtualLcd.virtualTempUnitName(store.saved.tempUnit, store.saved.language),
+        "",
+        vl(V.PressB3Save)
+      ];
+      aux = [
+        vl(V.LblTempUnit),
+        ">>> " + virtualLcd.virtualTempUnitName(store.draft.tempUnit, store.saved.language) + " <<<",
+        "",
+        vl(V.TurnDial)
+      ];
     } else if (state === "STATE_POWER_MENU") {
-      main = ["POWER MENU", "Option", store.powerOption === "screenOff" ? "Screen off" : "Light sleep", "B3 confirm"];
-      aux = ["ENC switch", "B1 or B2 home", "", ""];
+      main = [
+        vl(V.PowerMenuTitle),
+        "",
+        (store.powerOption === "screenOff" ? ">" : " ") + vl(V.PowerMenuScreenOff),
+        (store.powerOption === "lightSleep" ? ">" : " ") + vl(V.PowerMenuLightSleep)
+      ];
+      aux = [vl(V.PowerMenuTurnDial), vl(V.PowerMenuSelect), vl(V.PowerMenuBack), ""];
     } else if (state === "STATE_MONITOR_ENTRY") {
-      main = ["MONITOR MODE", "Preview active", "Remain " + Math.ceil(store.previewCountdownMs / 1000) + " sec", "B2 cancel"];
-      aux = ["Next screen off", "", "", ""];
+      if (store.previewCountdownMs <= 1000) {
+        main = ["", "", "", ""];
+        aux = ["", "", "", vl(V.MonitorEntryB2TurnsOn)];
+      } else {
+        main = [
+          vl(V.MonitorEntryTitle),
+          vl(V.MonitorEntryPreparing),
+          "",
+          vl(V.MonitorEntryTurningOffIn) + secUp(store.previewCountdownMs) + "s"
+        ];
+        aux = ["", "", "", vl(V.MonitorEntryCancelWithB2)];
+      }
     } else if (state === "STATE_SCREEN_OFF_MONITOR") {
       main = ["", "", "", ""];
       aux = ["", "", "", ""];
     } else if (state === "STATE_SLEEP_ENTRY") {
       var nextFeedSeconds = secondsUntilNextFeed();
-      main = [
-        "LIGHT SLEEP",
-        "Auto " + (store.saved.autoFeedEnabled ? "YES" : "NO"),
-        "Next " + (Number.isFinite(nextFeedSeconds) ? Math.ceil(nextFeedSeconds / 60) + " min" : "n/a"),
-        "Remain " + Math.ceil(store.previewCountdownMs / 1000) + " sec"
-      ];
-      aux = ["B2 cancel", "", "", ""];
+      if (store.previewCountdownMs <= 1000) {
+        main = ["", "", "", ""];
+        aux = ["", "", "", vl(V.SleepEntryB2TurnsOn)];
+      } else if (store.saved.autoFeedEnabled && Number.isFinite(nextFeedSeconds)) {
+        main = [
+          vl(V.SleepEntryTitle),
+          vl(V.SleepEntryNextAuto),
+          formatSleepEntryCountdown(nextFeedSeconds),
+          vl(V.SleepEntryWakeEarly)
+        ];
+        aux = [
+          "",
+          "",
+          vl(V.SleepEntrySleepingIn) + secUp(store.previewCountdownMs) + "s",
+          vl(V.SleepEntryCancelWithB2)
+        ];
+      } else {
+        main = [
+          vl(V.SleepEntryTitle),
+          vl(V.SleepEntryNoNextAuto),
+          vl(V.SleepEntryStayAsleep),
+          vl(V.SleepEntryWakeWithB2)
+        ];
+        aux = [
+          "",
+          "",
+          vl(V.SleepEntrySleepingIn) + secUp(store.previewCountdownMs) + "s",
+          vl(V.SleepEntryCancelWithB2)
+        ];
+      }
     } else if (state === "STATE_SLEEP_BLOCKED") {
-      main = ["SLEEP BLOCKED", "Feed window close", "Stay awake", ""];
-      aux = ["B1 or B2 home", "", "", ""];
+      main = [
+        vl(V.SleepBlockedTitle),
+        vl(V.SleepBlockedNextFeed),
+        vl(V.SleepBlockedAutoFeed),
+        vl(V.SleepBlockedSetNo)
+      ];
+      aux = [vl(V.SleepBlockedAllowSleep), "", vl(V.SleepBlockedBack), ""];
     } else if (state === "STATE_FACTORY_RESET") {
-      main = ["FACTORY RESET", "Reset all values", "Needs confirm", "B3 continue"];
-      aux = ["B1 next loops", "", "", ""];
+      main = [
+        vl(V.FactoryResetTitle),
+        vl(V.FactoryResetInfoLine1),
+        vl(V.FactoryResetInfoLine2),
+        vl(V.FactoryResetContinue)
+      ];
+      aux = ["", "", vl(V.FactoryResetSkip), ""];
     } else if (state === "STATE_FACTORY_RESET_CONFIRM") {
-      main = ["CONFIRM RESET", "All settings clear", "B1 long reset", "B2 or B3 back"];
-      aux = ["Danger state", "", "", ""];
+      main = [
+        vl(V.FactoryResetConfirmTitle),
+        vl(V.FactoryResetConfirmLine1),
+        vl(V.FactoryResetConfirmLine2),
+        vl(V.FactoryResetConfirmHoldB1)
+      ];
+      aux = ["", "", vl(V.FactoryResetConfirmCancel), ""];
     } else {
-      main = (screen.preview && screen.preview.main) || ["", "", "", ""];
-      aux = (screen.preview && screen.preview.aux) || ["", "", "", ""];
+      main = localize((screen.preview && screen.preview.main) || ["", "", "", ""], deviceUiLang());
+      aux = localize((screen.preview && screen.preview.aux) || ["", "", "", ""], deviceUiLang());
     }
 
     return {
-      title: localize(screen.title) || state,
-      summary: localize(screen.summary) || "",
-      hints: localize(screen.hints || []),
-      notes: localize(screen.notes) || "",
-      main: localize(main).map(translateLcdLine),
-      aux: localize(aux).map(translateLcdLine)
+      title: localize(screen.title, deviceUiLang()) || state,
+      summary: localize(screen.summary, deviceUiLang()) || "",
+      hints: localize(screen.hints || [], deviceUiLang()),
+      notes: localize(screen.notes, deviceUiLang()) || "",
+      main: main.map(translateLcdLine),
+      aux: aux.map(translateLcdLine)
     };
   }
 
   function renderTransitionHints() {
     var hints = [];
     if (store.currentState === "STATE_HOME") {
-      hints = ["B1 short -> Set Amount", "B2 short -> Monitor Entry", "B2 long -> Power Menu", "B3 short -> Feed Running", "B3 long -> Home purge hold"];
+      hints = [
+        text("B1 short -> Set Amount", "B1 corta -> Configurar Cantidad"),
+        text("B2 short -> Monitor Entry", "B2 corta -> Entrada a Monitoreo"),
+        text("B2 long -> Power Menu", "B2 larga -> Menu de Energia"),
+        text("B3 short -> Feed Running", "B3 corta -> Alimentacion"),
+        text("B3 long -> Home purge hold", "B3 larga -> Purga manual")
+      ];
     } else if (store.currentState === "STATE_SET_PURGE") {
-      hints = ["B1 long -> Purge Running", "B2 short -> Set Feed PM", "B1 short -> Set Enclosure"];
+      hints = [
+        text("B1 long -> Purge Running", "B1 larga -> Purga en Ejecucion"),
+        text("B2 short -> Set Feed PM", "B2 corta -> Configurar Feed PM"),
+        text("B1 short -> Set Enclosure", "B1 corta -> Configurar Recinto")
+      ];
     } else if (store.currentState === "STATE_POWER_MENU") {
-      hints = ["B3 short -> Screen Off or Sleep path", "Encoder -> toggle option", "B1 or B2 -> Home"];
+      hints = [
+        text("B3 short -> Screen Off or Sleep path", "B3 corta -> Pantalla apagada o Sueno"),
+        text("Encoder -> toggle option", "Encoder -> alternar opcion"),
+        text("B1 or B2 -> Home", "B1 o B2 -> Inicio")
+      ];
     } else if (store.currentState === "STATE_FACTORY_RESET_CONFIRM") {
-      hints = ["B1 long -> Full reset", "B1 short -> Factory Reset", "B2 short -> Factory Reset"];
+      hints = [
+        text("B1 long -> Full reset", "B1 larga -> Reinicio completo"),
+        text("B1 short -> Factory Reset", "B1 corta -> Reinicio de Fabrica"),
+        text("B2 short -> Factory Reset", "B2 corta -> Reinicio de Fabrica")
+      ];
     } else if (store.currentState === "STATE_FEED_RUNNING") {
-      hints = ["B1 short -> cancel runtime", "Auto return -> previous state"];
+      hints = [
+        text("B1 short -> cancel runtime", "B1 corta -> cancelar ejecucion"),
+        text("Auto return -> previous state", "Retorno auto -> estado previo")
+      ];
     } else if (store.currentState === "STATE_PURGE_RUNNING") {
-      hints = ["B1 short -> Set Purge", "Auto return -> Home"];
+      hints = [
+        text("B1 short -> Set Purge", "B1 corta -> Configurar Purga"),
+        text("Auto return -> Home", "Retorno auto -> Inicio")
+      ];
     } else if (store.currentState === "STATE_SCREEN_OFF_MONITOR") {
-      hints = ["B2 short -> Home"];
+      hints = [text("B2 short -> Home", "B2 corta -> Inicio")];
     } else if (store.currentState === "STATE_SLEEP_ENTRY") {
-      hints = ["Countdown -> simulated sleep and return Home", "B2 short -> Home"];
+      hints = [
+        text(
+          "Countdown -> simulated sleep and return Home",
+          "Cuenta regresiva -> sueno simulado y retorno a Inicio"
+        ),
+        text("B2 short -> Home", "B2 corta -> Inicio")
+      ];
     } else {
-      hints = ["B1 short -> next settings page", "B2 short -> previous settings page", "B3 short -> save when allowed"];
+      hints = [
+        text("B1 short -> next settings page", "B1 corta -> siguiente pagina de ajustes"),
+        text("B2 short -> previous settings page", "B2 corta -> pagina de ajustes anterior"),
+        text("B3 short -> save when allowed", "B3 corta -> guardar cuando este permitido")
+      ];
     }
 
     nodes.transitionHints.innerHTML = "";
@@ -974,20 +1207,28 @@
     nodes.lcdMain.textContent = description.main.join("\n");
     nodes.lcdAux.textContent = description.aux.join("\n");
     nodes.ledIndicator.setAttribute("data-color", localize(led.label, "en"));
-    nodes.ledLabel.textContent = localize(led.label);
+    nodes.ledLabel.textContent = localize(led.label, deviceUiLang());
     nodes.lcdShell.classList.toggle("is-dark", store.currentState === "STATE_SCREEN_OFF_MONITOR");
 
     var inlineHints = getInlineButtonHints();
-    if (nodes.b1Hint) nodes.b1Hint.textContent = inlineHints.b1;
-    if (nodes.b2Hint) nodes.b2Hint.textContent = inlineHints.b2;
-    if (nodes.b3Hint) nodes.b3Hint.textContent = inlineHints.b3;
+    var modeKey = store.pressMode === "long" ? "long" : "short";
+    ["b1", "b2", "b3"].forEach(function (key) {
+      var hint = inlineHints[key];
+      var slot = nodes.buttonHints[key];
+      var action = hint[modeKey];
+      if (slot) slot.textContent = action;
+    });
 
     renderTransitionHints();
 
     nodes.eventLog.innerHTML = "";
     store.eventLog.forEach(function (entry) {
       var item = document.createElement("li");
-      item.textContent = entry;
+      if (typeof entry === "string") {
+        item.textContent = entry;
+      } else {
+        item.textContent = entry.time + " - " + localize(entry.message, deviceUiLang());
+      }
       nodes.eventLog.appendChild(item);
     });
 
@@ -998,6 +1239,9 @@
     nodes.pressButtons.forEach(function (button) {
       button.classList.toggle("is-active", button.getAttribute("data-press-mode") === store.pressMode);
     });
+    if (nodes.pressModeGroup) {
+      nodes.pressModeGroup.setAttribute("data-active-mode", store.pressMode === "long" ? "long" : "short");
+    }
   }
 
   function tick() {
@@ -1008,10 +1252,15 @@
       if (store.previewCountdownMs <= 0) {
         if (store.currentState === "STATE_MONITOR_ENTRY") {
           store.currentState = "STATE_SCREEN_OFF_MONITOR";
-          logEvent("Display entered screen-off monitor");
+          logEvent(
+            pair(
+              "Display entered screen-off monitor",
+              "Pantalla entro a monitor con pantalla apagada"
+            )
+          );
         } else if (store.currentState === "STATE_SLEEP_ENTRY") {
           store.currentState = "STATE_HOME";
-          logEvent("Simulated light sleep completed");
+          logEvent(pair("Simulated light sleep completed", "Sueno ligero simulado completado"));
         }
       }
     }
@@ -1022,10 +1271,10 @@
         if (store.currentState === "STATE_FEED_RUNNING") {
           store.saved.lastFeed = formatTime(store.simulatedNow);
           store.currentState = store.runtime.returnState || "STATE_HOME";
-          logEvent("Feed runtime finished");
+          logEvent(pair("Feed runtime finished", "Alimentacion finalizada"));
         } else {
           store.currentState = "STATE_HOME";
-          logEvent("Timed purge finished");
+          logEvent(pair("Timed purge finished", "Purga temporizada finalizada"));
         }
         store.runtime.kind = null;
         store.runtime.remainingMs = 0;
@@ -1082,14 +1331,14 @@
       store.simulatedNow.setHours(parseInt(parts[0], 10));
       store.simulatedNow.setMinutes(parseInt(parts[1], 10));
       store.simulatedNow.setSeconds(0);
-      logEvent("Clock adjusted from simulator input");
+      logEvent(pair("Clock adjusted from simulator input", "Reloj ajustado desde entrada del simulador"));
       render();
     }
   });
 
   nodes.resetButton.addEventListener("click", function () {
     store = createDefaultStore();
-    logEvent("Simulator reset");
+    logEvent(pair("Simulator reset", "Simulador reiniciado"));
     render();
   });
 

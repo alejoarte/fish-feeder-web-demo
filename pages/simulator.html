@@ -2,173 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n-document-title="simulatorPage.title">Fish Feeder Simulator</title>
-  <meta name="description" content="Interactive Fish Feeder simulator with firmware-based state order, button logic, encoder edits, and LED rules." data-i18n-document-description="simulatorPage.description">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n-document-title="simulatorPage.title"></title>
+  <meta name="description" content="" data-i18n-document-description="simulatorPage.description">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/print.css" media="print">
 </head>
 <body data-page="simulator">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a class="skip-link" href="#main-content" data-i18n="nav.skipToContent"></a>
   <div class="site-shell">
     <header class="site-header no-print">
-      <a class="brand" href="../index.html" aria-label="Fish Feeder Demo home">
+      <a class="brand" href="../index.html" data-i18n-aria-label="nav.brandHome">
         <span class="brand-kicker">AgInno Institute</span>
-        <span class="brand-title" data-i18n="nav.brandTitle">Fish Feeder Demo</span>
+        <span class="brand-title" data-i18n="nav.brandTitle"></span>
       </a>
       <div class="header-actions">
-        <div class="header-switches">
-          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria-label="nav.language">
-            <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
-            <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
-          </div>
-        </div>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n="nav.menu">Menu</button>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n-aria-label="nav.menuToggleAria">
+          <span class="menu-toggle__icon" aria-hidden="true"></span>
+        </button>
       </div>
-      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="../index.html" data-i18n="nav.overview">Overview</a>
-        <a href="specs.html" data-i18n="nav.specs">LED + Specs</a>
-        <a href="gallery.html" data-i18n="nav.gallery">Screens Gallery</a>
-        <a href="simulator.html" data-i18n="nav.simulator" aria-current="page">Simulator</a>
+      <nav id="site-nav" class="site-nav" data-i18n-aria-label="nav.primaryNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs"></a>
+        <a href="gallery.html" data-i18n="nav.gallery"></a>
+        <a href="simulator.html" data-i18n="nav.simulator" aria-current="page"></a>
+        <div class="lang-switch" role="group" data-i18n-aria-label="nav.language">
+          <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
+          <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+        </div>
       </nav>
     </header>
 
     <main id="main-content">
       <section id="simulator-hero" class="hero-panel" aria-labelledby="simulator-hero-heading">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="simulatorPage.eyebrow">Interactive screen flow</p>
-          <h1 id="simulator-hero-heading" data-i18n="simulatorPage.heading">Press buttons, rotate the encoder, and watch the state machine move.</h1>
-          <p class="hero-text" data-i18n="simulatorPage.body">The simulator follows the firmware menu order, preserves the special home shortcuts, models editable fields, and computes LED output from live sensor inputs.</p>
+          <p class="eyebrow" data-i18n="simulatorPage.eyebrow"></p>
+          <h1 id="simulator-hero-heading" data-i18n="simulatorPage.heading"></h1>
+          <p class="hero-text" data-i18n="simulatorPage.body"></p>
         </div>
         <div class="hero-actions no-print">
-          <button id="reset-simulator" class="button button-primary" type="button" data-i18n="simulatorPage.reset">Reset simulator</button>
-          <a class="button button-secondary" href="gallery.html" data-i18n="simulatorPage.compare">Compare with gallery</a>
+          <button id="reset-simulator" class="button button-primary" type="button" data-i18n="simulatorPage.reset"></button>
+          <a class="button button-secondary" href="gallery.html" data-i18n="simulatorPage.compare"></a>
         </div>
       </section>
 
       <section id="simulator-workbench" class="section-block simulator-grid" aria-labelledby="state-title">
         <div class="simulator-stage">
           <article class="simulator-device">
-            <div class="device-topline">
-              <div>
-                <p class="device-label" data-i18n="simulatorPage.currentState">Current state</p>
+            <div class="device-topline device-topline--sim-state">
+              <div class="state-inline-main">
+                <p class="device-label" data-i18n="simulatorPage.currentState"></p>
                 <h2 id="state-title">STATE_HOME</h2>
               </div>
-              <div id="led-indicator" class="led-indicator">
-                <span class="led-lamp"></span>
-                <div>
-                  <p class="device-label" data-i18n="simulatorPage.led">LED</p>
+            </div>
+
+            <div class="hmi-face">
+              <div class="hmi-rail hmi-rail--left">
+                <div class="sim-live-inputs no-print">
+                  <p class="device-label" data-i18n="simulatorPage.liveInputs"></p>
+                  <div class="field-grid field-grid--live-compact">
+                    <label class="field">
+                      <span data-i18n="simulatorPage.phLabel"></span>
+                      <input id="sensor-ph" type="number" min="0" max="14" step="0.1">
+                    </label>
+                    <label class="field">
+                      <span data-i18n="simulatorPage.temperature"></span>
+                      <input id="sensor-temp" type="number" min="0" max="40" step="0.1">
+                    </label>
+                    <label class="field">
+                      <span data-i18n="simulatorPage.distance"></span>
+                      <input id="sensor-distance" type="number" min="0" max="100" step="0.1">
+                    </label>
+                    <label class="field field--time">
+                      <span data-i18n="simulatorPage.clock"></span>
+                      <span class="time-input-shell">
+                        <input id="sensor-time" type="time">
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div id="led-indicator" class="led-indicator led-indicator--hmi">
+                  <p class="device-label" data-i18n="simulatorPage.led"></p>
+                  <span class="led-lamp"></span>
                   <strong id="led-label">Off</strong>
                 </div>
-              </div>
-            </div>
-
-            <div id="lcd-shell" class="lcd-shell">
-              <article class="lcd-screen">
-                <header data-i18n="simulatorPage.mainLcd">Main LCD</header>
-                <pre id="lcd-main"></pre>
-              </article>
-              <article class="lcd-screen">
-                <header data-i18n="simulatorPage.auxLcd">Aux LCD</header>
-                <pre id="lcd-aux"></pre>
-              </article>
-            </div>
-
-            <div class="control-panels no-print">
-              <div class="control-card">
-                <p class="device-label" data-i18n="simulatorPage.pressMode">Button press mode</p>
-                <div class="segmented-control" id="press-mode-group">
-                  <button type="button" class="segmented-control__button is-active" data-press-mode="short" data-i18n="simulatorPage.short">Short</button>
-                  <button type="button" class="segmented-control__button" data-press-mode="long" data-i18n="simulatorPage.long">Long</button>
-                </div>
-              </div>
-
-              <div class="control-card">
-                <p class="device-label" data-i18n="simulatorPage.buttons">Buttons</p>
-                <div class="button-row">
-                  <div class="button-hint-group">
-                    <button type="button" class="button button-sim" data-control="B1" aria-describedby="b1-hint">B1</button>
-                    <span id="b1-hint" class="btn-hint">Short: Next setting</span>
-                  </div>
-                  <div class="button-hint-group">
-                    <button type="button" class="button button-sim" data-control="B2" aria-describedby="b2-hint">B2</button>
-                    <span id="b2-hint" class="btn-hint">Short: Previous setting</span>
-                  </div>
-                  <div class="button-hint-group">
-                    <button type="button" class="button button-sim" data-control="B3" aria-describedby="b3-hint">B3</button>
-                    <span id="b3-hint" class="btn-hint">Short: Save or action</span>
+                <div class="control-card control-card--hmi control-card--encoder-hmi">
+                  <p class="device-label" data-i18n="simulatorPage.encoder"></p>
+                  <div class="encoder-knob-shell">
+                    <div class="button-row button-row--equal button-row--encoder" role="group" data-i18n-aria-label="simulatorPage.encoderGroupAria">
+                      <button type="button" class="button button-sim button-sim--encoder" data-control="encoder-left" data-i18n-aria-label="simulatorPage.encoderLeftAria" data-i18n-title="simulatorPage.encoderLeftAria" aria-label="Rotate encoder left" title="Rotate encoder left">←</button>
+                      <button type="button" class="button button-sim button-sim--encoder" data-control="encoder-press" data-i18n-aria-label="simulatorPage.encoderPressAria" data-i18n-title="simulatorPage.encoderPressAria" aria-label="Press encoder" title="Press encoder">⊙</button>
+                      <button type="button" class="button button-sim button-sim--encoder" data-control="encoder-right" data-i18n-aria-label="simulatorPage.encoderRightAria" data-i18n-title="simulatorPage.encoderRightAria" aria-label="Rotate encoder right" title="Rotate encoder right">→</button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="control-card">
-                <p class="device-label" data-i18n="simulatorPage.encoder">Encoder</p>
-                <div class="button-row">
-                  <button type="button" class="button button-sim" data-control="encoder-left" data-i18n="simulatorPage.left">Left</button>
-                  <button type="button" class="button button-sim" data-control="encoder-press" data-i18n="simulatorPage.press">Press</button>
-                  <button type="button" class="button button-sim" data-control="encoder-right" data-i18n="simulatorPage.right">Right</button>
+              <div class="hmi-center">
+                <div id="lcd-shell" class="lcd-shell lcd-shell--stacked">
+                  <article class="lcd-screen lcd-screen--hmi">
+                    <header data-i18n="simulatorPage.mainLcd"></header>
+                    <pre id="lcd-main"></pre>
+                  </article>
+                  <article class="lcd-screen lcd-screen--hmi">
+                    <header data-i18n="simulatorPage.auxLcd"></header>
+                    <pre id="lcd-aux"></pre>
+                  </article>
+                </div>
+              </div>
+
+              <div class="hmi-rail hmi-rail--right">
+                <div class="hmi-button-column control-card control-card--hmi control-card--buttons-hmi">
+                  <div class="hmi-buttons-heading">
+                    <div
+                      class="segmented-control segmented-control--hmi-buttons no-print"
+                      id="press-mode-group"
+                      role="group"
+                      data-i18n-aria-label="simulatorPage.pressMode"
+                    >
+                      <button type="button" class="segmented-control__button is-active" data-press-mode="short" data-i18n="simulatorPage.short"></button>
+                      <button type="button" class="segmented-control__button" data-press-mode="long" data-i18n="simulatorPage.long"></button>
+                    </div>
+                  </div>
+                  <div class="button-row button-row--hmi-buttons">
+                    <div class="button-hint-group">
+                      <button type="button" class="button button-sim button-sim--hmi" data-control="B1" aria-describedby="b1-hint-action">B1</button>
+                      <p class="button-hint-active" id="b1-hint-action" aria-live="polite"></p>
+                    </div>
+                    <div class="button-hint-group">
+                      <button type="button" class="button button-sim button-sim--hmi" data-control="B2" aria-describedby="b2-hint-action">B2</button>
+                      <p class="button-hint-active" id="b2-hint-action" aria-live="polite"></p>
+                    </div>
+                    <div class="button-hint-group">
+                      <button type="button" class="button button-sim button-sim--hmi" data-control="B3" aria-describedby="b3-hint-action">B3</button>
+                      <p class="button-hint-active" id="b3-hint-action" aria-live="polite"></p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
           </article>
         </div>
 
-        <aside class="simulator-sidebar">
+        <div class="simulator-bottom-panels">
           <article class="side-card no-print">
-            <p class="device-label" data-i18n="simulatorPage.stateNotes">State notes</p>
+            <p class="device-label" data-i18n="simulatorPage.stateNotes"></p>
             <p id="state-summary"></p>
           </article>
 
           <article class="side-card no-print">
-            <p class="device-label" data-i18n="simulatorPage.transitionHints">Transition hints</p>
+            <p class="device-label" data-i18n="simulatorPage.transitionHints"></p>
             <div id="transition-hints" class="hint-grid"></div>
           </article>
 
           <article class="side-card no-print">
-            <p class="device-label" data-i18n="simulatorPage.liveInputs">Live inputs</p>
-            <div class="field-grid">
-              <label class="field">
-                <span>pH</span>
-                <input id="sensor-ph" type="number" min="0" max="14" step="0.1">
-              </label>
-              <label class="field">
-                <span data-i18n="simulatorPage.temperature">Temperature (C)</span>
-                <input id="sensor-temp" type="number" min="0" max="40" step="0.1">
-              </label>
-              <label class="field">
-                <span data-i18n="simulatorPage.distance">Distance cm</span>
-                <input id="sensor-distance" type="number" min="0" max="100" step="0.1">
-              </label>
-              <label class="field">
-                <span data-i18n="simulatorPage.clock">Clock</span>
-                <input id="sensor-time" type="time">
-              </label>
-            </div>
-          </article>
-
-          <article class="side-card no-print">
-            <p class="device-label" data-i18n="simulatorPage.eventLog">Event log</p>
+            <p class="device-label" data-i18n="simulatorPage.eventLog"></p>
             <ol id="event-log" class="event-log"></ol>
           </article>
-        </aside>
+        </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="footer-meta">
-        <p data-i18n="simulatorPage.footerLead">Static Fish Feeder demo for preview</p>
-        <p><span id="current-year"></span> • <span data-i18n="simulatorPage.footerStack">Alejandro Arteaga</span></p>
+        <p data-i18n="simulatorPage.footerLead"></p>
+        <p><span id="current-year"></span> • <span data-i18n="simulatorPage.footerStack"></span></p>
       </div>
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <a href="../index.html">Overview</a>
-        <a href="specs.html">LED + Specs</a>
-        <a href="gallery.html">Screens Gallery</a>
-        <a href="simulator.html" aria-current="page">Simulator</a>
+      <nav class="footer-nav" data-i18n-aria-label="nav.footerNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs"></a>
+        <a href="gallery.html" data-i18n="nav.gallery"></a>
+        <a href="simulator.html" data-i18n="nav.simulator" aria-current="page"></a>
       </nav>
     </footer>
   </div>
 
   <script src="../js/i18n.js"></script>
+  <script src="../js/data/firmware-config.js"></script>
+  <script src="../js/data/virtual-lcd-i18n.js"></script>
   <script src="../js/data/screens.js"></script>
   <script src="../js/data/specs.js"></script>
   <script src="../js/data/led-rules.js"></script>
@@ -176,3 +188,4 @@
   <script src="../js/simulator.js"></script>
 </body>
 </html>
+

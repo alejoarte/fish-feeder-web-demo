@@ -1,10 +1,30 @@
 (function () {
+  function repositionLangSwitch() {
+    var langSwitch = document.querySelector(".lang-switch");
+    var actions = document.querySelector(".header-actions");
+    var menuToggle = document.querySelector(".menu-toggle");
+    var siteNav = document.getElementById("site-nav");
+    if (!langSwitch || !actions || !menuToggle || !siteNav) {
+      return;
+    }
+    var mq = window.matchMedia("(max-width: 760px)");
+    if (mq.matches) {
+      if (langSwitch.parentElement !== actions) {
+        actions.insertBefore(langSwitch, menuToggle);
+      }
+    } else if (langSwitch.parentElement !== siteNav) {
+      siteNav.appendChild(langSwitch);
+    }
+  }
+
   function initNav() {
     var i18n = window.FishFeederI18n;
     var nav = document.getElementById("site-nav");
     var toggle = document.querySelector(".menu-toggle");
     var header = document.querySelector(".site-header");
     var page = document.body ? document.body.getAttribute("data-page") : "";
+
+    repositionLangSwitch();
 
     function setMenuState(isOpen) {
       if (nav) {
@@ -88,4 +108,6 @@
   } else {
     initNav();
   }
+
+  window.addEventListener("resize", repositionLangSwitch);
 })();

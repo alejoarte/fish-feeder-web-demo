@@ -1,7 +1,15 @@
 (function () {
+  var firmwareConfig = window.FishFeederFirmwareConfig;
+  if (!firmwareConfig) {
+    throw new Error("FishFeederFirmwareConfig is required before screens.js");
+  }
+
   function l(en, es) {
     return { en: en, es: es };
   }
+
+  var defaultDay = 34;
+  var defaultWeight = firmwareConfig.weightForDay(defaultDay);
 
   var menuOrder = [
     "STATE_HOME",
@@ -28,8 +36,8 @@
       notes: l("B1 short enters settings. B2 short enters monitor path. B2 long opens power menu. B3 short starts manual feed. B3 long triggers purge behavior.", "B1 corta entra a configuracion. B2 corta entra a monitoreo. B2 larga abre energia. B3 corta inicia alimentacion manual. B3 larga activa purga."),
       hints: [l("B1 next settings", "B1 siguiente ajuste"), l("B2 monitor path", "B2 ruta de monitoreo"), l("B2 long power menu", "B2 larga menu energia"), l("B3 short manual feed", "B3 corta alimentacion manual"), l("B3 long purge", "B3 larga purga")],
       preview: {
-        main: { en: ["DAY 034  08:15", "STATUS  IDLE", "LASTFD  07:30", "FISH    120"], es: ["DIA 034  08:15", "ESTADO  REPOSO", "ULTALM  07:30", "PECES   120"] },
-        aux: { en: ["WEIGHT  212 g", "pH      7.30", "TEMP    24.4 C", "LEVEL   14.0 cm"], es: ["PESO    212 g", "pH      7.30", "TEMP    24.4 C", "NIVEL   14.0 cm"] }
+        main: { en: ["HOME           08:15", "Day Cycle: 34", "Last Feed: 07:30", "State: Halted"], es: ["INICIO         08:15", "Ciclo dia: 34", "Ult. comida: 07:30", "Estado: Detenido"] },
+        aux: { en: ["Fish: 120", "Weight: " + defaultWeight + "g", "pH: 7.3", "Temp: 24.4 C"], es: ["Peces: 120", "Peso: " + defaultWeight + "g", "pH: 7.3", "Temp: 24.4 C"] }
       }
     },
     STATE_MONITOR_ENTRY: {
@@ -61,8 +69,8 @@
       notes: l("B1 short moves to Set Cycle. B2 short returns to Home. B3 short saves.", "B1 corta va a Set Cycle. B2 corta vuelve a Inicio. B3 corta guarda."),
       hints: [l("Encoder adjust fish count", "Encoder ajusta peces"), l("B3 save", "B3 guardar"), l("B1 next", "B1 siguiente"), l("B2 previous", "B2 anterior")],
       preview: {
-        main: { en: ["SET AMOUNT", "Saved 120 fish", "Draft 125 fish", "ENC to adjust"], es: ["CANTIDAD", "Guardado 120", "Borrador 125", "ENC ajusta"] },
-        aux: { en: ["B3 save", "B1 next", "", ""], es: ["B3 guarda", "B1 sig.", "", ""] }
+        main: { en: ["CONFIG. AMOUNT", "Current Amount: 120", "", "Press B3 to Save"], es: ["CONFIG. CANTIDAD", "Cantidad act.: 120", "", "Pulsa B3 guardar"] },
+        aux: { en: ["Changing:", ">>> 125 <<<", "", "Turn Dial"], es: ["Cambio:", ">>> 125 <<<", "", "Girar dial"] }
       }
     },
     STATE_SET_CYCLE: {
@@ -72,8 +80,8 @@
       notes: l("This screen mirrors the firmware dual edit mode behavior.", "Esta pantalla refleja el comportamiento real de doble modo del firmware."),
       hints: [l("Encoder left/right edit", "Encoder izquierda/derecha"), l("Encoder press switch mode", "Encoder presion cambia modo"), l("B3 save", "B3 guardar")],
       preview: {
-        main: { en: ["SET CYCLE", "Mode: By day", "Day 034", "Match 212 g"], es: ["CICLO", "Modo: por dia", "Dia 034", "Coinc. 212 g"] },
-        aux: { en: ["Press to By gram", "B3 save", "", ""], es: ["Pulsa a gramos", "B3 guarda", "", ""] }
+        main: { en: ["CONFIG. GROWTH", "Saved: Day 34", "", "Press B3 to Save"], es: ["CONFIG. CRECIM.", "Guard.: Dia 34", "", "Pulsa B3 guardar"] },
+        aux: { en: ["Mode: By Day", "New Day: 34", "Table: " + defaultWeight + "g", "SW:Mode Dial:Edit"], es: ["Modo: Por dia", "Nuevo dia: 34", "Tabla: " + defaultWeight + "g", "SW:Modo Dial:Edit"] }
       }
     },
     STATE_SET_AUTO: {
@@ -83,8 +91,8 @@
       notes: l("Part of the auto-feed cluster before AM and PM feed times.", "Parte del grupo de auto-feed antes de horarios AM y PM."),
       hints: [l("Encoder toggles", "Encoder alterna"), l("B3 save", "B3 guardar"), l("B1 next", "B1 siguiente"), l("B2 previous", "B2 anterior")],
       preview: {
-        main: { en: ["AUTO FEED", "Saved YES", "Draft YES", "ENC to toggle"], es: ["AUTO FEED", "Guardado SI", "Borrador SI", "ENC alterna"] },
-        aux: { en: ["B3 save", "", "", ""], es: ["B3 guarda", "", "", ""] }
+        main: { en: ["CONFIG. AUTO FEED", "Saved: YES", "", "Press B3 to Save"], es: ["CONFIG. AUTO ALIM", "Guardado: SI", "", "Pulsa B3 guardar"] },
+        aux: { en: ["System automatic", ">>> YES <<<", "", "Turn Dial"], es: ["Sistema automatico", ">>> SI <<<", "", "Girar dial"] }
       }
     },
     STATE_SET_FEED_AM: {
@@ -127,8 +135,8 @@
       notes: l("If it finishes naturally, the firmware returns to Home.", "Si termina normalmente, el firmware vuelve a Inicio."),
       hints: [l("B1 cancel purge", "B1 cancela purga"), l("B2 no action", "B2 sin accion")],
       preview: {
-        main: { en: ["PURGE ACTIVE", "Remaining 00:28", "Motor reverse", "LED blue"], es: ["PURGA ACTIVA", "Quedan 00:28", "Motor reversa", "LED azul"] },
-        aux: { en: ["B1 cancel", "", "", ""], es: ["B1 cancela", "", "", ""] }
+        main: { en: ["PURGING", "Left 28s", "", "B1: Cancel"], es: ["PURGANDO", "Quedan 28s", "", "B1: Cancelar"] },
+        aux: { en: ["Left 28s", "", "B1: Cancel", ""], es: ["Quedan 28s", "", "B1: Cancelar", ""] }
       }
     },
     STATE_FEED_RUNNING: {
@@ -138,8 +146,8 @@
       notes: l("B1 short cancels feed runtime. When complete it returns to the saved previous screen.", "B1 corta cancela la alimentacion. Al terminar vuelve a la pantalla previa guardada."),
       hints: [l("B1 cancel feed", "B1 cancela feed"), l("B2 no action", "B2 sin accion")],
       preview: {
-        main: { en: ["FEED RUNNING", "Manual feed", "Remaining 00:09", "LED blue"], es: ["FEED ACTIVO", "Feed manual", "Quedan 00:09", "LED azul"] },
-        aux: { en: ["Fish 120", "Weight 212 g", "Day 034", "B1 cancel"], es: ["Peces 120", "Peso 212 g", "Dia 034", "B1 cancela"] }
+        main: { en: ["FEEDING", "Left 9s", "Manual Feed", "B1: Cancel"], es: ["ALIMENTANDO", "Quedan 9s", "Manual", "B1: Cancelar"] },
+        aux: { en: ["Fish: 120", "Weight: " + defaultWeight + "g", "Day Cycle: 34", "B1: Cancel"], es: ["Peces: 120", "Peso: " + defaultWeight + "g", "Ciclo dia: 34", "B1: Cancelar"] }
       }
     },
     STATE_SET_ENCLOSURE: {
@@ -160,7 +168,7 @@
       notes: l("The firmware uses 1 lb or 1.5 lb target modes.", "El firmware usa metas de 1 lb o 1.5 lb."),
       hints: [l("Encoder toggles goal", "Encoder alterna meta"), l("B3 save", "B3 guardar")],
       preview: {
-        main: { en: ["HARVEST GOAL", "Saved 1.0 lb", "Draft 1.5 lb", "Day cap expands"], es: ["META COSECHA", "Guardado 1.0 lb", "Borrador 1.5 lb", "Limite se amplia"] },
+        main: { en: ["HARVEST GOAL", "Saved 1.0 lb", "Draft 1.5 lb", "Max day 226"], es: ["META COSECHA", "Guardado 1.0 lb", "Borrador 1.5 lb", "Max dia 226"] },
         aux: { en: ["B3 save", "", "", ""], es: ["B3 guarda", "", "", ""] }
       }
     },
@@ -204,8 +212,8 @@
       notes: l("B3 short confirms the selected power behavior.", "B3 corta confirma el comportamiento de energia seleccionado."),
       hints: [l("Encoder toggles option", "Encoder alterna opcion"), l("B3 confirm option", "B3 confirma opcion")],
       preview: {
-        main: { en: ["POWER MENU", "Option screen off", "Option light sleep", "ENC select"], es: ["MENU ENERGIA", "Opcion pantalla", "Opcion sueno", "ENC selecciona"] },
-        aux: { en: ["B3 confirm", "", "", ""], es: ["B3 confirma", "", "", ""] }
+        main: { en: ["POWER", "", ">Monitor Mode", " Sleep Mode"], es: ["ENERGIA", "", ">Modo monitor", " Modo sueno"] },
+        aux: { en: ["Turn Dial", "B3: Select", "B1/B2: Back", ""], es: ["Girar dial", "B3: Elegir", "B1/B2: Atras", ""] }
       }
     },
     STATE_SLEEP_ENTRY: {
@@ -215,8 +223,8 @@
       notes: l("The preview references auto-feed readiness and time until the next feed.", "La vista previa muestra el estado de auto-feed y el tiempo hasta la siguiente alimentacion."),
       hints: [l("B2 cancel to home", "B2 cancelar a inicio"), l("Countdown before sleep", "Cuenta regresiva antes de dormir")],
       preview: {
-        main: { en: ["LIGHT SLEEP", "Auto YES", "Next feed 02:10", "Remain 15 sec"], es: ["SUENO LIGERO", "Auto SI", "Siguiente 02:10", "Quedan 15 s"] },
-        aux: { en: ["B2 cancel", "", "", ""], es: ["B2 cancela", "", "", ""] }
+        main: { en: ["SLEEP MODE", "Next auto feed in", "2h 10m", "Wakes 2 min early"], es: ["MODO SUENO", "Prox alim auto en", "2h 10m", "Despierta 2 min ant"] },
+        aux: { en: ["", "", "Sleeping in 15s", "Press B2 to cancel"], es: ["", "", "Durmiendo en 15s", "Pulsa B2 cancelar"] }
       }
     },
     STATE_SLEEP_BLOCKED: {
@@ -226,8 +234,8 @@
       notes: l("B1 or B2 returns to Home depending on the firmware branch.", "B1 o B2 vuelven a Inicio segun la rama del firmware."),
       hints: [l("B1 return home", "B1 vuelve a inicio"), l("B2 return home", "B2 vuelve a inicio")],
       preview: {
-        main: { en: ["SLEEP BLOCKED", "Feed is too close", "Stay awake", ""], es: ["SUENO BLOQ.", "Feed muy cerca", "Mantener activo", ""] },
-        aux: { en: ["B1 or B2 home", "", "", ""], es: ["B1 o B2 inicio", "", "", ""] }
+        main: { en: ["SLEEP BLOCKED", "Next feed in <2min", "Auto Feed must be", "set to NO"], es: ["SUENO BLOQUEADO", "Prox comida <2min", "Auto alim. debe", "ponerse en NO"] },
+        aux: { en: ["to allow sleep.", "", "B1/B2: Back", ""], es: ["para dormir.", "", "B1/B2: Atras", ""] }
       }
     },
     STATE_FACTORY_RESET: {
@@ -237,8 +245,8 @@
       notes: l("Reached at the end of the settings loop.", "Se alcanza al final del ciclo de configuracion."),
       hints: [l("B3 enter confirm", "B3 entra a confirmar"), l("B1 next loops home", "B1 siguiente vuelve a inicio")],
       preview: {
-        main: { en: ["FACTORY RESET", "Reset all values", "Needs confirm", ""], es: ["REINICIO FAB.", "Reinicia valores", "Necesita confirmar", ""] },
-        aux: { en: ["B3 continue", "", "", ""], es: ["B3 continua", "", "", ""] }
+        main: { en: ["FACTORY RESET", "Delete all saved", "data and settings.", "B3: Continue"], es: ["RESET FABRICA", "Borra datos y", "config guardada.", "B3: Continuar"] },
+        aux: { en: ["", "", "B1: Skip", ""], es: ["", "", "B1: Saltar", ""] }
       }
     },
     STATE_FACTORY_RESET_CONFIRM: {
@@ -248,8 +256,8 @@
       notes: l("B1 long performs reset. Short B1 or B2 returns to the intro screen.", "B1 larga realiza el reinicio. B1 corta o B2 vuelven a la pantalla inicial."),
       hints: [l("B1 long reset", "B1 larga reinicia"), l("B1 short back", "B1 corta atras"), l("B2 back", "B2 atras"), l("B3 toggle back", "B3 vuelve atras")],
       preview: {
-        main: { en: ["CONFIRM RESET", "All settings clear", "Hold B1 to reset", ""], es: ["CONFIRMAR", "Todo se borra", "Mantenga B1", ""] },
-        aux: { en: ["B1 long confirm", "B2 cancel", "", ""], es: ["B1 larga confirma", "B2 cancela", "", ""] }
+        main: { en: ["RESET CONFIRM", "This is permanent.", "All data will go.", "Hold B1 to reset"], es: ["CONFIRMAR RESET", "Esto es final.", "Todo se borrara.", "Mant. B1 reset"] },
+        aux: { en: ["", "", "B2/B3: Cancel", ""], es: ["", "", "B2/B3: Cancelar", ""] }
       }
     }
   };

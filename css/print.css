@@ -23,10 +23,20 @@ body {
   display: none !important;
 }
 
+/* Specs page: omit section titles that read awkwardly on paper */
+#specs-components .section-heading {
+  display: none !important;
+}
+
+#specs-constants {
+  display: none !important;
+}
+
 .hero-panel,
 .section-block,
 .info-card,
 .detail-panel,
+.priority-detail-panel,
 .print-panel,
 .priority-item,
 .meta-card,
@@ -63,6 +73,7 @@ body {
 .hero-copy h1,
 .section-heading h2,
 .detail-panel h3,
+.priority-detail-panel h3,
 .info-card h3,
 .priority-item strong,
 .meta-card strong {
@@ -98,10 +109,19 @@ body {
 }
 
 .priority-stack,
+.priority-print-all,
 .constant-table,
 .detail-list,
 .detail-meta {
   gap: 8px !important;
+}
+
+.priority-interactive {
+  display: none !important;
+}
+
+.priority-print-all {
+  display: block !important;
 }
 
 .section-heading {
@@ -112,7 +132,7 @@ body {
 .detail-list > *,
 .constant-table > *,
 .priority-stack > *,
-#led-cards > * {
+.priority-print-all > * {
   margin-bottom: 8pt !important;
 }
 
@@ -139,9 +159,21 @@ pre {
   white-space: pre-wrap !important;
 }
 
-#component-detail,
+#component-detail {
+  display: none !important;
+}
+
+.component-print-all {
+  display: block !important;
+}
+
+.component-print-block {
+  break-inside: avoid;
+  margin-bottom: 12pt !important;
+}
+
+#component-print-all,
 #constants-table,
-#led-priority,
-#led-cards {
+#priority-print-all {
   width: 100% !important;
 }

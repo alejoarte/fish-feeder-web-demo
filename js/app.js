@@ -4,6 +4,7 @@
   var ledRules = window.FishFeederLedRules || { priority: [] };
   var i18n = window.FishFeederI18n;
   var activeComponentId = null;
+  var activePriorityTabIndex = 0;
   var featureIndex = 0;
 
   function t(key, vars) {
@@ -150,13 +151,15 @@
   }
 
   function renderSpecs() {
-    var ledCards = document.getElementById("led-cards");
-    var priority = document.getElementById("led-priority");
+    var priorityTabs = document.getElementById("priority-tabs");
+    var priorityDetail = document.getElementById("priority-detail");
+    var priorityPrintAll = document.getElementById("priority-print-all");
     var selector = document.getElementById("component-selector");
     var detail = document.getElementById("component-detail");
     var constantsTable = document.getElementById("constants-table");
     var printButton = document.getElementById("print-specs");
-    if (!ledCards || !priority || !selector || !detail || !constantsTable) {
+    var componentPrintAll = document.getElementById("component-print-all");
+    if (!priorityTabs || !priorityDetail || !selector || !detail || !constantsTable) {
       return;
     }
 
@@ -167,35 +170,124 @@
       });
     }
 
-    ledCards.innerHTML = "";
-    priority.innerHTML = "";
     selector.innerHTML = "";
     constantsTable.innerHTML = "";
 
-    ledRules.priority.forEach(function (rule, index) {
-      var item = createElement("article", "priority-item");
-      item.appendChild(createElement("div", "priority-rank", String(index + 1)));
-      item.appendChild(createElement("span", "color-chip " + rule.cssClass, ""));
-      var copy = createElement("div");
-      copy.appendChild(createElement("strong", "", localize(rule.label)));
-      copy.appendChild(createElement("p", "", localize(rule.condition) + ". " + localize(rule.detail)));
-      item.appendChild(copy);
-      priority.appendChild(item);
+    if (priorityPrintAll) {
+      priorityPrintAll.innerHTML = "";
+      ledRules.priority.forEach(function (rule, index) {
+        var item = createElement("article", "priority-item");
+        item.appendChild(createElement("div", "priority-rank", String(index + 1)));
+        item.appendChild(createElement("span", "color-chip " + rule.cssClass, ""));
+        var copy = createElement("div");
+        copy.appendChild(createElement("strong", "", localize(rule.label)));
+        copy.appendChild(createElement("p", "", localize(rule.condition) + ". " + localize(rule.detail)));
+        item.appendChild(copy);
+        priorityPrintAll.appendChild(item);
+      });
+    }
 
-      var card = createElement("article", "info-card");
-      card.appendChild(createElement("p", "card-tag", localize(rule.label)));
-      card.appendChild(createElement("span", "color-chip " + rule.cssClass, ""));
-      card.appendChild(createElement("h3", "", localize(rule.condition)));
-      card.appendChild(createElement("p", "", localize(rule.detail)));
-      ledCards.appendChild(card);
+    function renderPriorityDetail(rule, index) {
+      var total = ledRules.priority.length;
+      priorityDetail.innerHTML = "";
+      var header = createElement("div", "priority-detail-header");
+      header.appendChild(createElement("div", "priority-rank", String(index + 1)));
+      var titleRow = createElement("div", "priority-detail-title");
+      titleRow.appendChild(createElement("span", "color-chip " + rule.cssClass, ""));
+      titleRow.appendChild(createElement("h3", "", localize(rule.label)));
+      header.appendChild(titleRow);
+      priorityDetail.appendChild(header);
+      priorityDetail.appendChild(
+        createElement(
+          "p",
+          "card-tag",
+          t("specsPage.priorityRank", { rank: String(index + 1), total: String(total) })
+        )
+      );
+      priorityDetail.appendChild(createElement("p", "detail-section-label", t("specsPage.priorityWhen")));
+      priorityDetail.appendChild(createElement("p", "priority-detail-body", localize(rule.condition)));
+      priorityDetail.appendChild(createElement("p", "detail-section-label", t("specsPage.priorityMeaning")));
+      priorityDetail.appendChild(createElement("p", "priority-detail-body", localize(rule.detail)));
+    }
+
+    function selectPriorityTab(index) {
+      var max = ledRules.priority.length - 1;
+      activePriorityTabIndex = Math.max(0, Math.min(index, max));
+      priorityTabs.querySelectorAll('[role="tab"]').forEach(function (tab, i) {
+        var selected = i === activePriorityTabIndex;
+        tab.classList.toggle("is-active", selected);
+        tab.setAttribute("aria-selected", selected ? "true" : "false");
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      var rule = ledRules.priority[activePriorityTabIndex];
+      priorityDetail.setAttribute("aria-labelledby", "priority-tab-" + activePriorityTabIndex);
+      renderPriorityDetail(rule, activePriorityTabIndex);
+    }
+
+    priorityTabs.innerHTML = "";
+    ledRules.priority.forEach(function (rule, index) {
+      var tab = createElement("button", "priority-tab");
+      tab.type = "button";
+      tab.role = "tab";
+      tab.id = "priority-tab-" + index;
+      tab.setAttribute("aria-selected", index === activePriorityTabIndex ? "true" : "false");
+      tab.setAttribute("aria-controls", "priority-detail");
+      tab.tabIndex = index === activePriorityTabIndex ? 0 : -1;
+      var inner = createElement("span", "priority-tab-inner");
+      inner.appendChild(createElement("span", "priority-tab-rank", String(index + 1)));
+      inner.appendChild(createElement("span", "color-chip " + rule.cssClass, ""));
+      inner.appendChild(createElement("span", "priority-tab-label", localize(rule.label)));
+      tab.appendChild(inner);
+      tab.addEventListener("click", function () {
+        selectPriorityTab(index);
+        tab.focus();
+      });
+      priorityTabs.appendChild(tab);
     });
 
-    function showComponent(component) {
-      detail.innerHTML = "";
-      detail.appendChild(createElement("p", "card-tag", localize(component.name)));
-      detail.appendChild(createElement("h3", "", localize(component.name)));
-      detail.appendChild(createElement("p", "", localize(component.lead)));
+    if (!priorityTabs.dataset.boundKeynav) {
+      priorityTabs.dataset.boundKeynav = "true";
+      priorityTabs.addEventListener("keydown", function (event) {
+        var max = ledRules.priority.length - 1;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+          event.preventDefault();
+          selectPriorityTab(Math.min(activePriorityTabIndex + 1, max));
+          var next = document.getElementById("priority-tab-" + activePriorityTabIndex);
+          if (next) next.focus();
+        } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+          event.preventDefault();
+          selectPriorityTab(Math.max(activePriorityTabIndex - 1, 0));
+          var prev = document.getElementById("priority-tab-" + activePriorityTabIndex);
+          if (prev) prev.focus();
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          selectPriorityTab(0);
+          var first = document.getElementById("priority-tab-0");
+          if (first) first.focus();
+        } else if (event.key === "End") {
+          event.preventDefault();
+          selectPriorityTab(max);
+          var last = document.getElementById("priority-tab-" + max);
+          if (last) last.focus();
+        }
+      });
+    }
 
+    selectPriorityTab(activePriorityTabIndex);
+
+    function renderComponentDetail(container, component) {
+      container.innerHTML = "";
+      container.appendChild(createElement("p", "card-tag", localize(component.name)));
+      container.appendChild(createElement("h3", "", localize(component.name)));
+      container.appendChild(createElement("p", "", localize(component.lead)));
+
+      container.appendChild(
+        createElement(
+          "p",
+          "detail-section-label",
+          localize({ en: "Technical metadata", es: "Metadatos tecnicos" })
+        )
+      );
       var meta = createElement("div", "detail-meta");
       component.meta.forEach(function (item) {
         var card = createElement("div", "meta-card");
@@ -203,13 +295,33 @@
         card.appendChild(createElement("p", "", localize(item.value)));
         meta.appendChild(card);
       });
-      detail.appendChild(meta);
+      container.appendChild(meta);
 
+      container.appendChild(
+        createElement(
+          "p",
+          "detail-section-label",
+          localize({ en: "Behavior notes", es: "Notas de comportamiento" })
+        )
+      );
       var list = createElement("div", "detail-list");
       localize(component.bullets).forEach(function (bullet) {
         list.appendChild(createElement("div", "meta-card", bullet));
       });
-      detail.appendChild(list);
+      container.appendChild(list);
+    }
+
+    function showComponent(component) {
+      renderComponentDetail(detail, component);
+    }
+
+    if (componentPrintAll) {
+      componentPrintAll.innerHTML = "";
+      specsData.components.forEach(function (component) {
+        var block = createElement("article", "component-print-block print-panel");
+        renderComponentDetail(block, component);
+        componentPrintAll.appendChild(block);
+      });
     }
 
     specsData.components.forEach(function (component, index) {

@@ -2,83 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n-document-title="specsPage.title">Fish Feeder LED and Specifications</title>
-  <meta name="description" content="Technical overview of Fish Feeder LED rules, thresholds, sensor details, and printable specifications." data-i18n-document-description="specsPage.description">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n-document-title="specsPage.title"></title>
+  <meta name="description" content="" data-i18n-document-description="specsPage.description">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/print.css" media="print">
 </head>
 <body data-page="specs">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a class="skip-link" href="#main-content" data-i18n="nav.skipToContent"></a>
   <div class="site-shell">
     <header class="site-header no-print">
-      <a class="brand" href="../index.html" aria-label="Fish Feeder Demo home">
+      <a class="brand" href="../index.html" data-i18n-aria-label="nav.brandHome">
         <span class="brand-kicker">AgInno Institute</span>
-        <span class="brand-title" data-i18n="nav.brandTitle">Fish Feeder Demo</span>
+        <span class="brand-title" data-i18n="nav.brandTitle"></span>
       </a>
       <div class="header-actions">
-        <div class="header-switches">
-          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria-label="nav.language">
-            <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
-            <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
-          </div>
-        </div>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n="nav.menu">Menu</button>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n-aria-label="nav.menuToggleAria">
+          <span class="menu-toggle__icon" aria-hidden="true"></span>
+        </button>
       </div>
-      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="../index.html" data-i18n="nav.overview">Overview</a>
-        <a href="specs.html" data-i18n="nav.specs" aria-current="page">LED + Specs</a>
-        <a href="gallery.html" data-i18n="nav.gallery">Screens Gallery</a>
-        <a href="simulator.html" data-i18n="nav.simulator">Simulator</a>
+      <nav id="site-nav" class="site-nav" data-i18n-aria-label="nav.primaryNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs" aria-current="page"></a>
+        <a href="gallery.html" data-i18n="nav.gallery"></a>
+        <a href="simulator.html" data-i18n="nav.simulator"></a>
+        <div class="lang-switch" role="group" data-i18n-aria-label="nav.language">
+          <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
+          <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+        </div>
       </nav>
     </header>
 
     <main id="main-content">
       <section id="specs-hero" class="hero-panel" aria-labelledby="specs-hero-heading">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="specsPage.eyebrow">LED logic and technical details</p>
-          <h1 id="specs-hero-heading" data-i18n="specsPage.heading">One color at a time, with strict priority.</h1>
-          <p class="hero-text" data-i18n="specsPage.body">This page explains every LED outcome, the exact thresholds behind it, and the component-level notes that drive the Fish Feeder status system.</p>
+          <p class="eyebrow" data-i18n="specsPage.eyebrow"></p>
+          <h1 id="specs-hero-heading" data-i18n="specsPage.heading"></h1>
+          <p class="hero-text" data-i18n="specsPage.body"></p>
         </div>
         <div class="hero-actions no-print">
-          <button id="print-specs" class="button button-primary" type="button" data-i18n="specsPage.print">Print specifications</button>
-          <a class="button button-secondary" href="simulator.html" data-i18n="specsPage.testSimulator">Test rules in simulator</a>
+          <button id="print-specs" class="button button-primary" type="button" data-i18n="specsPage.print"></button>
+          <a class="button button-secondary" href="simulator.html" data-i18n="specsPage.testSimulator"></a>
         </div>
       </section>
 
       <section id="specs-priority" class="section-block" aria-labelledby="specs-priority-heading">
         <div class="section-heading">
-          <p class="eyebrow" data-i18n="specsPage.priorityEyebrow">Priority ladder</p>
-          <h2 id="specs-priority-heading" data-i18n="specsPage.priorityHeading">LED decisions that must stay in this order</h2>
+          <p class="eyebrow" data-i18n="specsPage.priorityEyebrow"></p>
+          <h2 id="specs-priority-heading" data-i18n="specsPage.priorityHeading"></h2>
         </div>
-        <div id="led-priority" class="priority-stack"></div>
+        <div class="priority-interactive">
+          <div
+            id="priority-tabs"
+            class="priority-tabs"
+            role="tablist"
+            data-i18n-aria-label="specsPage.priorityTablist"
+          ></div>
+          <article
+            id="priority-detail"
+            class="priority-detail-panel print-panel"
+            role="tabpanel"
+            tabindex="0"
+          ></article>
+        </div>
+        <div id="priority-print-all" class="priority-print-all" aria-hidden="true"></div>
       </section>
 
       <section id="specs-colors" class="section-block" aria-labelledby="specs-colors-heading">
         <div class="section-heading">
-          <p class="eyebrow" data-i18n="specsPage.colorsEyebrow">Colors and triggers</p>
-          <h2 id="specs-colors-heading" data-i18n="specsPage.colorsHeading">Exact LED meanings</h2>
+          <p class="eyebrow" data-i18n="specsPage.colorsEyebrow"></p>
+          <h2 id="specs-colors-heading" data-i18n="specsPage.colorsHeading"></h2>
         </div>
-        <div id="led-cards" class="card-grid card-grid-four"></div>
+        <p class="lead-text specs-colors-intro" data-i18n="specsPage.colorsIntro"></p>
       </section>
 
       <section id="specs-components" class="section-block" aria-labelledby="specs-components-heading">
         <div class="section-heading">
-          <p class="eyebrow" data-i18n="specsPage.componentsEyebrow">Component details</p>
-          <h2 id="specs-components-heading" data-i18n="specsPage.componentsHeading">Select a subsystem to inspect its rules and specs</h2>
+          <p class="eyebrow" data-i18n="specsPage.componentsEyebrow"></p>
+          <h2 id="specs-components-heading" data-i18n="specsPage.componentsHeading"></h2>
         </div>
         <div class="specs-layout">
           <aside class="selector-panel no-print">
-            <div id="component-selector" class="selector-list" role="tablist" aria-label="Component selector" data-i18n-aria-label="specsPage.componentSelector"></div>
+            <div id="component-selector" class="selector-list" role="tablist" data-i18n-aria-label="specsPage.componentSelector"></div>
           </aside>
           <article id="component-detail" class="detail-panel print-panel" aria-live="polite"></article>
         </div>
+        <div id="component-print-all" class="component-print-all" aria-hidden="true"></div>
       </section>
 
       <section id="specs-constants" class="section-block print-panel" aria-labelledby="specs-constants-heading">
         <div class="section-heading">
-          <p class="eyebrow" data-i18n="specsPage.constantsEyebrow">Reference snapshot</p>
-          <h2 id="specs-constants-heading" data-i18n="specsPage.constantsHeading">Quick constants</h2>
+          <p class="eyebrow" data-i18n="specsPage.constantsEyebrow"></p>
+          <h2 id="specs-constants-heading" data-i18n="specsPage.constantsHeading"></h2>
         </div>
         <div id="constants-table"></div>
       </section>
@@ -86,19 +101,20 @@
 
     <footer class="site-footer">
       <div class="footer-meta">
-        <p data-i18n="specsPage.footerLead">Static Fish Feeder demo for preview</p>
-        <p><span id="current-year"></span> • <span data-i18n="specsPage.footerStack">Alejandro Arteaga</span></p>
+        <p data-i18n="specsPage.footerLead"></p>
+        <p><span id="current-year"></span> • <span data-i18n="specsPage.footerStack"></span></p>
       </div>
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <a href="../index.html">Overview</a>
-        <a href="specs.html" aria-current="page">LED + Specs</a>
-        <a href="gallery.html">Screens Gallery</a>
-        <a href="simulator.html">Simulator</a>
+      <nav class="footer-nav" data-i18n-aria-label="nav.footerNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs" aria-current="page"></a>
+        <a href="gallery.html" data-i18n="nav.gallery"></a>
+        <a href="simulator.html" data-i18n="nav.simulator"></a>
       </nav>
     </footer>
   </div>
 
   <script src="../js/i18n.js"></script>
+  <script src="../js/data/firmware-config.js"></script>
   <script src="../js/data/screens.js"></script>
   <script src="../js/data/specs.js"></script>
   <script src="../js/data/led-rules.js"></script>

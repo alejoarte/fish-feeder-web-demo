@@ -1,4 +1,9 @@
 (function () {
+  var firmwareConfig = window.FishFeederFirmwareConfig;
+  if (!firmwareConfig) {
+    throw new Error("FishFeederFirmwareConfig is required before specs.js");
+  }
+
   function l(en, es) {
     return { en: en, es: es };
   }
@@ -9,11 +14,11 @@
       { label: l("Aux LCD", "LCD auxiliar"), value: l("20 x 4 at I2C 0x25", "20 x 4 en I2C 0x25") },
       { label: "RTC", value: "I2C 0x68" },
       { label: "RGB LED", value: l("Common-cathode on GPIO 26 / 25 / 27", "Catodo comun en GPIO 26 / 25 / 27") },
-      { label: l("pH safe range", "Rango seguro de pH"), value: "6.2 to 8.8" },
-      { label: l("Temperature safe range", "Rango seguro de temperatura"), value: "20 C to 27 C" },
-      { label: l("Food level threshold", "Umbral de nivel de alimento"), value: l("Distance greater than 20 cm", "Distancia mayor a 20 cm") },
-      { label: l("Feed rates", "Velocidades de alimentacion"), value: l("9.49 g/s small, 8.26 g/s medium, 7.63 g/s large", "9.49 g/s pequena, 8.26 g/s mediana, 7.63 g/s grande") },
-      { label: l("Purge max duration", "Duracion maxima de purga"), value: l("600 seconds total", "600 segundos totales") }
+      { label: l("pH safe range", "Rango seguro de pH"), value: firmwareConfig.sensors.phLowLimit + " to " + firmwareConfig.sensors.phHighLimit },
+      { label: l("Temperature safe range", "Rango seguro de temperatura"), value: firmwareConfig.sensors.tempLowLimitC + " C to " + firmwareConfig.sensors.tempHighLimitC + " C" },
+      { label: l("Food level threshold", "Umbral de nivel de alimento"), value: l("Distance greater than " + firmwareConfig.sensors.feedThresholdCm + " cm", "Distancia mayor a " + firmwareConfig.sensors.feedThresholdCm + " cm") },
+      { label: l("Feed rates", "Velocidades de alimentacion"), value: l(firmwareConfig.feeding.smallFeedRate + " g/s small, " + firmwareConfig.feeding.mediumFeedRate + " g/s medium, " + firmwareConfig.feeding.largeFeedRate + " g/s large", firmwareConfig.feeding.smallFeedRate + " g/s pequena, " + firmwareConfig.feeding.mediumFeedRate + " g/s mediana, " + firmwareConfig.feeding.largeFeedRate + " g/s grande") },
+      { label: l("Purge max duration", "Duracion maxima de purga"), value: l(firmwareConfig.limits.purgeTotalSecMax + " seconds total", firmwareConfig.limits.purgeTotalSecMax + " segundos totales") }
     ],
     components: [
       {

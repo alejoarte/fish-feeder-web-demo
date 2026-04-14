@@ -1,4 +1,9 @@
 (function () {
+  var firmwareConfig = window.FishFeederFirmwareConfig;
+  if (!firmwareConfig) {
+    throw new Error("FishFeederFirmwareConfig is required before led-rules.js");
+  }
+
   function l(en, es) {
     return { en: en, es: es };
   }
@@ -21,7 +26,7 @@
       condition: l("pH below 6.2 or above 8.8", "pH por debajo de 6.2 o por encima de 8.8"),
       detail: l("Safe pH range is 6.2 to 8.8.", "El rango seguro de pH es 6.2 a 8.8."),
       evaluate: function (context) {
-        return context.ph < 6.2 || context.ph > 8.8;
+        return context.ph < firmwareConfig.sensors.phLowLimit || context.ph > firmwareConfig.sensors.phHighLimit;
       }
     },
     {
@@ -31,7 +36,7 @@
       condition: l("Temperature below 20 C or above 27 C", "Temperatura por debajo de 20 C o por encima de 27 C"),
       detail: l("White indicates temperature outside the accepted water range.", "Blanco indica temperatura fuera del rango aceptado del agua."),
       evaluate: function (context) {
-        return context.temp < 20 || context.temp > 27;
+        return context.temp < firmwareConfig.sensors.tempLowLimitC || context.temp > firmwareConfig.sensors.tempHighLimitC;
       }
     },
     {
@@ -41,7 +46,7 @@
       condition: l("Food level low: distance greater than 20 cm", "Nivel de alimento bajo: distancia mayor a 20 cm"),
       detail: l("Green appears only when motor, pH, and temperature conditions are all clear.", "Verde solo aparece cuando motor, pH y temperatura estan sin alertas."),
       evaluate: function (context) {
-        return context.distance > 20;
+        return context.distance > firmwareConfig.sensors.feedThresholdCm;
       }
     },
     {

@@ -2,54 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n-document-title="galleryPage.title">Fish Feeder Screens Gallery</title>
-  <meta name="description" content="Scrollable visual catalog of Fish Feeder screens grouped by monitoring, settings, runtime, power, and reset flows." data-i18n-document-description="galleryPage.description">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n-document-title="galleryPage.title"></title>
+  <meta name="description" content="" data-i18n-document-description="galleryPage.description">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/print.css" media="print">
 </head>
 <body data-page="gallery">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a class="skip-link" href="#main-content" data-i18n="nav.skipToContent"></a>
   <div class="site-shell">
     <header class="site-header no-print">
-      <a class="brand" href="../index.html" aria-label="Fish Feeder Demo home">
+      <a class="brand" href="../index.html" data-i18n-aria-label="nav.brandHome">
         <span class="brand-kicker">AgInno Institute</span>
-        <span class="brand-title" data-i18n="nav.brandTitle">Fish Feeder Demo</span>
+        <span class="brand-title" data-i18n="nav.brandTitle"></span>
       </a>
       <div class="header-actions">
-        <div class="header-switches">
-          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria-label="nav.language">
-            <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
-            <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
-          </div>
-        </div>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n="nav.menu">Menu</button>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-i18n-aria-label="nav.menuToggleAria">
+          <span class="menu-toggle__icon" aria-hidden="true"></span>
+        </button>
       </div>
-      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="../index.html" data-i18n="nav.overview">Overview</a>
-        <a href="specs.html" data-i18n="nav.specs">LED + Specs</a>
-        <a href="gallery.html" data-i18n="nav.gallery" aria-current="page">Screens Gallery</a>
-        <a href="simulator.html" data-i18n="nav.simulator">Simulator</a>
+      <nav id="site-nav" class="site-nav" data-i18n-aria-label="nav.primaryNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs"></a>
+        <a href="gallery.html" data-i18n="nav.gallery" aria-current="page"></a>
+        <a href="simulator.html" data-i18n="nav.simulator"></a>
+        <div class="lang-switch" role="group" data-i18n-aria-label="nav.language">
+          <button type="button" class="lang-switch__button" data-lang-choice="en">EN</button>
+          <button type="button" class="lang-switch__button" data-lang-choice="es">ES</button>
+        </div>
       </nav>
     </header>
 
     <main id="main-content">
       <section id="gallery-hero" class="hero-panel" aria-labelledby="gallery-hero-heading">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="galleryPage.eyebrow">Scrollable system archive</p>
-          <h1 id="gallery-hero-heading" data-i18n="galleryPage.heading">Every major screen in one narrative flow.</h1>
-          <p class="hero-text" data-i18n="galleryPage.body">This page groups the firmware screens by purpose so you can understand the monitoring, configuration, runtime, sleep, and reset experience without using the interactive simulator.</p>
+          <p class="eyebrow" data-i18n="galleryPage.eyebrow"></p>
+          <h1 id="gallery-hero-heading" data-i18n="galleryPage.heading"></h1>
+          <p class="hero-text" data-i18n="galleryPage.body"></p>
         </div>
       </section>
 
-      <section id="gallery-jump" class="section-block no-print" aria-label="Jump links">
+      <section id="gallery-jump" class="section-block no-print" data-i18n-aria-label="galleryPage.jumpLinksAria">
         <div class="pill-row" id="gallery-jump-links"></div>
       </section>
 
       <section id="gallery-story" class="section-block" aria-labelledby="gallery-story-heading">
         <div class="section-heading">
-          <p class="eyebrow" data-i18n="galleryPage.storyEyebrow">Screen story</p>
-          <h2 id="gallery-story-heading" data-i18n="galleryPage.storyHeading">Visual catalog of states and transitions</h2>
+          <p class="eyebrow" data-i18n="galleryPage.storyEyebrow"></p>
+          <h2 id="gallery-story-heading" data-i18n="galleryPage.storyHeading"></h2>
         </div>
         <div id="gallery-sections" class="gallery-sections"></div>
       </section>
@@ -57,19 +57,20 @@
 
     <footer class="site-footer">
       <div class="footer-meta">
-        <p data-i18n="galleryPage.footerLead">Static Fish Feeder demo for preview</p>
-        <p><span id="current-year"></span> • <span data-i18n="galleryPage.footerStack">Alejandro Arteaga</span></p>
+        <p data-i18n="galleryPage.footerLead"></p>
+        <p><span id="current-year"></span> • <span data-i18n="galleryPage.footerStack"></span></p>
       </div>
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <a href="../index.html">Overview</a>
-        <a href="specs.html">LED + Specs</a>
-        <a href="gallery.html" aria-current="page">Screens Gallery</a>
-        <a href="simulator.html">Simulator</a>
+      <nav class="footer-nav" data-i18n-aria-label="nav.footerNav">
+        <a href="../index.html" data-i18n="nav.overview"></a>
+        <a href="specs.html" data-i18n="nav.specs"></a>
+        <a href="gallery.html" data-i18n="nav.gallery" aria-current="page"></a>
+        <a href="simulator.html" data-i18n="nav.simulator"></a>
       </nav>
     </footer>
   </div>
 
   <script src="../js/i18n.js"></script>
+  <script src="../js/data/firmware-config.js"></script>
   <script src="../js/data/screens.js"></script>
   <script src="../js/data/specs.js"></script>
   <script src="../js/data/led-rules.js"></script>
