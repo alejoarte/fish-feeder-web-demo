@@ -1,4 +1,8 @@
 (function () {
+  function isCompactNavViewport() {
+    return window.matchMedia("(max-width: 760px), (max-height: 500px) and (orientation: landscape) and (max-width: 980px)").matches;
+  }
+
   function repositionLangSwitch() {
     var langSwitch = document.querySelector(".lang-switch");
     var actions = document.querySelector(".header-actions");
@@ -7,8 +11,7 @@
     if (!langSwitch || !actions || !menuToggle || !siteNav) {
       return;
     }
-    var mq = window.matchMedia("(max-width: 760px)");
-    if (mq.matches) {
+    if (isCompactNavViewport()) {
       if (langSwitch.parentElement !== actions) {
         actions.insertBefore(langSwitch, menuToggle);
       }
@@ -64,7 +67,7 @@
         }
 
         link.addEventListener("click", function () {
-          if (window.innerWidth <= 760) {
+          if (isCompactNavViewport()) {
             setMenuState(false);
           }
         });

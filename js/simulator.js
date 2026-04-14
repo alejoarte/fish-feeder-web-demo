@@ -78,7 +78,7 @@
     if (store.currentState === "STATE_HOME") {
       return {
         b1: {
-          short: text("Set Amount", "Configurar Cantidad"),
+          short: text("Open settings", "Abrir ajustes"),
           long: text("No action", "Sin accion")
         },
         b2: {
@@ -102,7 +102,39 @@
           long: hintLongUnused()
         },
         b3: {
-          short: text("Save purge values", "Guardar valores de purga"),
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_FACTORY_RESET") {
+      return {
+        b1: {
+          short: text("Skip reset", "Omitir reinicio"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("Previous setting", "Ajuste anterior"),
+          long: hintLongUnused()
+        },
+        b3: {
+          short: text("Continue reset", "Continuar reinicio"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_FACTORY_RESET_CONFIRM") {
+      return {
+        b1: {
+          short: text("Back to reset", "Volver a reinicio"),
+          long: text("Factory reset now", "Reiniciar fabrica ahora")
+        },
+        b2: {
+          short: text("Cancel reset", "Cancelar reinicio"),
+          long: text("Cancel reset", "Cancelar reinicio")
+        },
+        b3: {
+          short: text("Back to reset", "Volver a reinicio"),
           long: hintLongUnused()
         }
       };
@@ -119,6 +151,86 @@
         },
         b3: {
           short: text("Confirm power option", "Confirmar opcion de energia"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_FEED_RUNNING") {
+      return {
+        b1: {
+          short: text("Cancel feed", "Cancelar alimentacion"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        },
+        b3: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_PURGE_RUNNING") {
+      return {
+        b1: {
+          short: text("Cancel purge", "Cancelar purga"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        },
+        b3: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_MONITOR_ENTRY" || store.currentState === "STATE_SCREEN_OFF_MONITOR") {
+      return {
+        b1: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("Return home", "Volver a inicio"),
+          long: text("Return home", "Volver a inicio")
+        },
+        b3: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_SLEEP_ENTRY") {
+      return {
+        b1: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        },
+        b2: {
+          short: text("Return home", "Volver a inicio"),
+          long: text("Return home", "Volver a inicio")
+        },
+        b3: {
+          short: text("No action", "Sin accion"),
+          long: hintLongUnused()
+        }
+      };
+    }
+    if (store.currentState === "STATE_SLEEP_BLOCKED") {
+      return {
+        b1: {
+          short: text("Return home", "Volver a inicio"),
+          long: text("Return home", "Volver a inicio")
+        },
+        b2: {
+          short: text("Return home", "Volver a inicio"),
+          long: text("Return home", "Volver a inicio")
+        },
+        b3: {
+          short: text("No action", "Sin accion"),
           long: hintLongUnused()
         }
       };
@@ -1137,7 +1249,7 @@
     var hints = [];
     if (store.currentState === "STATE_HOME") {
       hints = [
-        text("B1 short -> Set Amount", "B1 corta -> Configurar Cantidad"),
+        text("B1 short -> Open settings", "B1 corta -> Abrir ajustes"),
         text("B2 short -> Monitor Entry", "B2 corta -> Entrada a Monitoreo"),
         text("B2 long -> Power Menu", "B2 larga -> Menu de Energia"),
         text("B3 short -> Feed Running", "B3 corta -> Alimentacion"),
@@ -1147,7 +1259,8 @@
       hints = [
         text("B1 long -> Purge Running", "B1 larga -> Purga en Ejecucion"),
         text("B2 short -> Set Feed PM", "B2 corta -> Configurar Feed PM"),
-        text("B1 short -> Set Enclosure", "B1 corta -> Configurar Recinto")
+        text("B1 short -> Set Enclosure", "B1 corta -> Configurar Recinto"),
+        text("B3 short -> no action", "B3 corta -> sin accion")
       ];
     } else if (store.currentState === "STATE_POWER_MENU") {
       hints = [
@@ -1159,27 +1272,42 @@
       hints = [
         text("B1 long -> Full reset", "B1 larga -> Reinicio completo"),
         text("B1 short -> Factory Reset", "B1 corta -> Reinicio de Fabrica"),
-        text("B2 short -> Factory Reset", "B2 corta -> Reinicio de Fabrica")
+        text("B2 short/long -> Factory Reset", "B2 corta/larga -> Reinicio de Fabrica"),
+        text("B3 short -> Factory Reset", "B3 corta -> Reinicio de Fabrica")
       ];
     } else if (store.currentState === "STATE_FEED_RUNNING") {
       hints = [
         text("B1 short -> cancel runtime", "B1 corta -> cancelar ejecucion"),
+        text("B2/B3 short -> no action", "B2/B3 corta -> sin accion"),
         text("Auto return -> previous state", "Retorno auto -> estado previo")
       ];
     } else if (store.currentState === "STATE_PURGE_RUNNING") {
       hints = [
         text("B1 short -> Set Purge", "B1 corta -> Configurar Purga"),
+        text("B2/B3 short -> no action", "B2/B3 corta -> sin accion"),
         text("Auto return -> Home", "Retorno auto -> Inicio")
       ];
+    } else if (store.currentState === "STATE_MONITOR_ENTRY") {
+      hints = [
+        text("B2 short/long -> Home", "B2 corta/larga -> Inicio"),
+        text("B1/B3 short -> no action", "B1/B3 corta -> sin accion"),
+        text("Countdown -> Screen Off Monitor", "Cuenta regresiva -> Monitor pantalla apagada")
+      ];
     } else if (store.currentState === "STATE_SCREEN_OFF_MONITOR") {
-      hints = [text("B2 short -> Home", "B2 corta -> Inicio")];
+      hints = [
+        text("B2 short/long -> Home", "B2 corta/larga -> Inicio"),
+        text("B1/B3 short -> no action", "B1/B3 corta -> sin accion")
+      ];
     } else if (store.currentState === "STATE_SLEEP_ENTRY") {
       hints = [
-        text(
-          "Countdown -> simulated sleep and return Home",
-          "Cuenta regresiva -> sueno simulado y retorno a Inicio"
-        ),
-        text("B2 short -> Home", "B2 corta -> Inicio")
+        text("B2 short/long -> Home", "B2 corta/larga -> Inicio"),
+        text("B1/B3 short -> no action", "B1/B3 corta -> sin accion"),
+        text("Countdown -> simulated sleep and return Home", "Cuenta regresiva -> sueno simulado y retorno a Inicio")
+      ];
+    } else if (store.currentState === "STATE_SLEEP_BLOCKED") {
+      hints = [
+        text("B1/B2 short/long -> Home", "B1/B2 corta/larga -> Inicio"),
+        text("B3 short -> no action", "B3 corta -> sin accion")
       ];
     } else {
       hints = [

@@ -84,6 +84,7 @@ body {
     radial-gradient(circle at top right, var(--hero-glow-two), transparent 24%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   transition: background 0.25s ease, color 0.25s ease;
 }
 
@@ -1575,9 +1576,10 @@ body[data-page="simulator"] .hmi-button-column {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
   max-width: 100%;
   width: 100%;
+  max-height: 340px;
   margin-inline: auto;
 }
 
@@ -1587,8 +1589,8 @@ body[data-page="simulator"] .hmi-buttons-heading {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 4px;
-  padding: 10px 10px 12px;
+  margin-bottom: 2px;
+  padding: 7px 8px 8px;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(10, 24, 42, 0.72), rgba(18, 38, 61, 0.66));
   border: 1px solid rgba(168, 218, 220, 0.12);
@@ -1669,24 +1671,25 @@ body[data-page="simulator"] .segmented-control--hmi-buttons .segmented-control__
 body[data-page="simulator"] .button-row--hmi-buttons {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   align-items: stretch;
-  padding-top: 2px;
+  padding-top: 0;
   margin-inline: auto;
 }
 
 body[data-page="simulator"] .button-row--hmi-buttons .button-hint-group {
   width: 100%;
+  gap: 3px;
 }
 
 body[data-page="simulator"] .button-sim--hmi {
-  min-height: 34px;
-  padding: 8px 12px;
+  min-height: 30px;
+  padding: 6px 11px;
   border-radius: 10px;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   background: linear-gradient(180deg, #2a2a2e 0%, #121214 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #e8eef4;
@@ -1699,13 +1702,13 @@ body[data-page="simulator"] .button-sim--hmi:hover {
 }
 
 body[data-page="simulator"] .button-row--hmi-buttons .button-hint-active {
-  margin: 3px 0 0;
+  margin: 1px 0 0;
   padding: 0 4px;
   text-align: center;
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   line-height: 1.35;
   color: rgba(241, 250, 238, 0.9);
-  min-height: 2.1em;
+  min-height: 1.6em;
   max-width: 95%;
   margin-inline: auto;
 }
@@ -1755,6 +1758,88 @@ body[data-page="simulator"] .simulator-bottom-panels {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  body[data-page="simulator"] .hmi-face {
+    grid-template-columns: minmax(210px, 0.95fr) minmax(0, 1.1fr) minmax(145px, 0.68fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  body[data-page="simulator"] .hmi-rail--left {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  body[data-page="simulator"] .hmi-center {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+  }
+
+  body[data-page="simulator"] .hmi-rail--right {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: start;
+  }
+
+  body[data-page="simulator"] .hmi-button-column {
+    max-width: 160px;
+    margin-inline: auto;
+    gap: 4px;
+  }
+
+  body[data-page="simulator"] .control-card--buttons-hmi {
+    padding: 7px;
+    border-radius: 12px;
+  }
+
+  body[data-page="simulator"] .hmi-buttons-heading {
+    padding: 4px 5px;
+    margin-bottom: 1px;
+  }
+
+  body[data-page="simulator"] .segmented-control--hmi-buttons .segmented-control__button {
+    padding: 4px 8px;
+    font-size: 0.62rem;
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+  }
+
+  body[data-page="simulator"] .button-sim--hmi {
+    min-height: 22px;
+    padding: 2px 6px;
+    font-size: 0.66rem;
+    border-radius: 7px;
+    width: 88%;
+    max-width: 120px;
+    margin-inline: auto;
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons .button-hint-active {
+    margin-top: 1px;
+    min-height: 0.95em;
+    font-size: 0.52rem;
+    text-align: center;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field-grid--live-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="simulator"] .simulator-bottom-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="simulator"] .simulator-bottom-panels .side-card:last-child {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -1824,15 +1909,189 @@ body[data-page="simulator"] .simulator-bottom-panels {
   }
 
   body[data-page="simulator"] .hmi-button-column {
-    max-width: 420px;
+    max-width: 360px;
     margin-inline: auto;
     width: 100%;
   }
 }
 
+@media (max-width: 900px) and (orientation: landscape) {
+  body[data-page="simulator"] .simulator-device {
+    padding: 16px;
+  }
+
+  body[data-page="simulator"] .device-topline--sim-state {
+    margin-bottom: 10px;
+  }
+
+  body[data-page="simulator"] .hmi-face {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs {
+    padding: 10px 12px 12px;
+    max-width: 220px;
+    margin-inline: 0;
+  }
+
+  body[data-page="simulator"] .led-indicator--hmi {
+    max-width: 220px;
+    margin-inline: 0;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .device-label {
+    margin-bottom: 6px;
+    font-size: 0.58rem;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field > span {
+    font-size: 0.66rem;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field input,
+  body[data-page="simulator"] .sim-live-inputs .field--time .time-input-shell input[type="time"] {
+    min-height: 28px;
+    padding: 4px 7px;
+    font-size: 0.74rem;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field--time .time-input-shell {
+    position: relative;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field--time .time-input-shell input[type="time"] {
+    text-align: start;
+    padding-inline-end: 1.75rem;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field--time .time-input-shell input[type="time"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 6px;
+    margin: 0;
+    padding: 0;
+    transform: translateY(-50%);
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field-grid--live-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 8px;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field {
+    gap: 3px;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field > span {
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    min-height: 2.35em;
+    white-space: normal;
+  }
+
+  body[data-page="simulator"] .control-card--encoder-hmi {
+    max-width: 118px;
+    padding: 6px 6px 7px;
+    align-self: center;
+  }
+
+  body[data-page="simulator"] .button-row--encoder {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  body[data-page="simulator"] .button-row--encoder .button-sim--encoder {
+    font-size: 0.72rem;
+  }
+
+  body[data-page="simulator"] .hmi-face .lcd-shell--stacked {
+    width: 100%;
+    gap: 10px;
+  }
+
+  body[data-page="simulator"] .hmi-center {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  body[data-page="simulator"] .lcd-screen--hmi {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  body[data-page="simulator"] .lcd-screen--hmi pre {
+    min-height: 4.5em;
+    font-size: 0.86rem;
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons .button-hint-group {
+    display: grid;
+    justify-items: stretch;
+    width: min(100%, 130px);
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons .button-sim--hmi {
+    width: 100%;
+    min-height: 26px;
+    padding: 4px 8px;
+    font-size: 0.74rem;
+    border-radius: 8px;
+    letter-spacing: 0.035em;
+  }
+
+  body[data-page="simulator"] .button-row--hmi-buttons .button-hint-active {
+    min-height: 1.15em;
+    margin-top: 1px;
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  body[data-page="simulator"] .control-card--encoder-hmi {
+    width: auto;
+    max-width: 160px;
+    padding: 8px 8px 9px;
+    align-self: center;
+    margin-inline: auto;
+  }
+
+  body[data-page="simulator"] .control-card--encoder-hmi .device-label {
+    margin: 0 0 5px;
+    font-size: 0.74rem;
+    letter-spacing: 0.09em;
+  }
+
+  body[data-page="simulator"] .encoder-knob-shell {
+    padding: 5px;
+  }
+
+  body[data-page="simulator"] .button-row--encoder {
+    gap: 2px;
+    padding: 4px 3px;
+  }
+
+  body[data-page="simulator"] .button-row--encoder .button-sim--encoder {
+    font-size: 0.82rem;
+    min-height: 34px;
+  }
+}
+
 @media (max-width: 520px) {
   body[data-page="simulator"] .sim-live-inputs .field-grid--live-compact {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  body[data-page="simulator"] .sim-live-inputs .field > span {
+    min-height: 2.2em;
   }
 }
 
@@ -1994,10 +2253,10 @@ body[data-page="simulator"] .simulator-bottom-panels {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) and (max-width: 980px) {
   .site-shell {
     width: 100%;
-    padding-top: 12px;
+    padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -2005,9 +2264,9 @@ body[data-page="simulator"] .simulator-bottom-panels {
   .site-header {
     align-items: center;
     flex-wrap: wrap;
-    top: 8px;
-    gap: 10px;
-    padding: 12px 14px;
+    top: 6px;
+    gap: 8px;
+    padding: 10px 12px;
   }
 
   .header-actions {
@@ -2022,11 +2281,11 @@ body[data-page="simulator"] .simulator-bottom-panels {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 0;
   }
 
@@ -2043,7 +2302,7 @@ body[data-page="simulator"] .simulator-bottom-panels {
   }
 
   .brand-title {
-    font-size: 1rem;
+    font-size: 0.92rem;
   }
 
   .header-actions {
@@ -2060,8 +2319,8 @@ body[data-page="simulator"] .simulator-bottom-panels {
 
   .lang-switch__button {
     flex: 0 0 auto;
-    padding: 4px 7px;
-    font-size: 0.72rem;
+    padding: 3px 6px;
+    font-size: 0.68rem;
   }
 
   .site-nav {
@@ -2081,9 +2340,10 @@ body[data-page="simulator"] .simulator-bottom-panels {
   .site-nav a {
     width: 100%;
     text-align: left;
-    padding: 10px 14px;
-    border-radius: 14px;
+    padding: 8px 11px;
+    border-radius: 12px;
     line-height: 1.25;
+    font-size: 0.92rem;
   }
 
   .card-grid-four,
@@ -2140,6 +2400,42 @@ body[data-page="simulator"] .simulator-bottom-panels {
 
   .priority-item {
     grid-template-columns: auto 1fr;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) and (max-width: 980px) {
+  body[data-page="simulator"] .hmi-face {
+    grid-template-columns: minmax(185px, 0.74fr) minmax(0, 1.38fr) minmax(118px, 0.5fr);
+    gap: 10px;
+  }
+
+  body[data-page="simulator"] .hmi-center {
+    min-width: 0;
+    width: 100%;
+    align-self: stretch;
+  }
+
+  body[data-page="simulator"] .hmi-face .lcd-shell--stacked,
+  body[data-page="simulator"] .lcd-screen--hmi {
+    width: 100%;
+  }
+
+  body[data-page="simulator"] .lcd-screen--hmi {
+    padding: 11px 12px;
+  }
+
+  body[data-page="simulator"] .lcd-screen--hmi pre {
+    min-height: 4.85em;
+    font-size: 0.87rem;
+    line-height: 1.45;
+  }
+
+  body[data-page="simulator"] .hmi-button-column {
+    max-width: 156px;
+  }
+
+  body[data-page="simulator"] .segmented-control--hmi-buttons .segmented-control__button {
+    padding-inline: 11px;
   }
 }
 
